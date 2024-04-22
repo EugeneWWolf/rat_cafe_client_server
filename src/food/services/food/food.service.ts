@@ -22,7 +22,7 @@ export class FoodService {
         const food = await this.foodRepository.find();
 
         if (!food) {
-            throw new NotFoundException();
+            throw new Error("Couldn't find data: database is empty");
         }
 
         return food;
@@ -36,7 +36,7 @@ export class FoodService {
         const food = await this.foodRepository.findOneBy({ id });
     
         if (!food) {
-            throw new NotFoundException();
+            throw new Error(`Couldn't update data: no item with such id (${id})`);
         }
 
         return this.foodRepository.update(id, updateFoodDto);
@@ -46,7 +46,7 @@ export class FoodService {
         const food = await this.foodRepository.findOneBy({ id });
     
         if (!food) {
-            throw new NotFoundException();
+            throw new Error(`Couldn't remove data: no item with such id (${id})`);
         }
 
         return await this.foodRepository.remove(food);
