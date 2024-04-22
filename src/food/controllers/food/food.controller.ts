@@ -5,11 +5,6 @@ import { Food } from 'src/food/entities/food.entity';
 import { FoodService } from 'src/food/services/food/food.service';
 import { UpdateResult } from 'typeorm';
 
-/* 
-    @TODO: Добавить проверку на поступающие данные (в виде пайпов?) на null, так как когда поступило null
-    название блюда, сервак покрошился.
-*/
-
 @Controller('food')
 export class FoodController {
     constructor(private readonly foodService: FoodService) {}
