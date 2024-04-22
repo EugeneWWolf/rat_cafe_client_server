@@ -19,15 +19,22 @@ export class FoodService {
     }
 
     async findAll(): Promise<Food[]> {
-        return await this.foodRepository.find();
+        const food = await this.foodRepository.find();
+
+        if (!food) {
+            throw new NotFoundException();
+        }
+
+        return food;
     }
 
-    async findOne(id: number): Promise<Food | null> {
-        return await this.foodRepository.findOneBy({ id });
+    async findOne(id: number): Promise<Food> {
+        return await this.foodRepository.findOneByOrFail({ id });
     }
 
     async update(id: number, updateFoodDto: UpdateFoodDto): Promise<UpdateResult> {
         const food = await this.foodRepository.findOneBy({ id });
+    
         if (!food) {
             throw new NotFoundException();
         }
@@ -37,6 +44,7 @@ export class FoodService {
 
     async remove(id: number): Promise<Food> {
         const food = await this.foodRepository.findOneBy({ id });
+    
         if (!food) {
             throw new NotFoundException();
         }
