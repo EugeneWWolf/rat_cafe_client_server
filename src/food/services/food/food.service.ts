@@ -32,14 +32,18 @@ export class FoodService {
         return await this.foodRepository.findOneByOrFail({ id });
     }
 
-    async update(id: number, updateFoodDto: UpdateFoodDto): Promise<UpdateResult> {
+    async update(id: number, updateFoodDto: UpdateFoodDto): Promise<void> {
         const food = await this.foodRepository.findOneBy({ id });
     
         if (!food) {
             throw new Error(`Couldn't update data: no item with such id (${id})`);
         }
 
-        return this.foodRepository.update(id, updateFoodDto);
+        try {
+            await this.foodRepository.update(id, updateFoodDto);
+        } catch (err) {
+            throw new Error(`Unable to update data with id (${id})`);
+        }
     }
 
     async remove(id: number): Promise<Food> {

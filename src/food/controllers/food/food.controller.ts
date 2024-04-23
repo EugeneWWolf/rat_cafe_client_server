@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { CreateFoodDto } from 'src/food/dto/create-food.dto';
 import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
 import { Food } from 'src/food/entities/food.entity';
@@ -19,7 +19,7 @@ export class FoodController {
         try {
             return await this.foodService.findAll();
         } catch(err) {
-            throw new NotFoundException("Database is empty");
+            throw new InternalServerErrorException("Database is empty");
         }
     }
 
@@ -33,9 +33,9 @@ export class FoodController {
     }
 
     @Patch(':id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body() updateFoodDto: UpdateFoodDto): Promise<UpdateResult> {
+    async update(@Param('id', ParseIntPipe) id: number, @Body() updateFoodDto: UpdateFoodDto): Promise<void> {
         try {
-            return await this.foodService.update(id, updateFoodDto);
+            await this.foodService.update(id, updateFoodDto);
         } catch(err) {
             throw new NotFoundException(`Cannot update item with id ${id}`);
         }
@@ -43,7 +43,6 @@ export class FoodController {
 
     @Delete(':id')
     async remove(@Param('id', ParseIntPipe) id: number): Promise<Food> {
-
         try {
             return await this.foodService.remove(id);
         } catch(err) {
