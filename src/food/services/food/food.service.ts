@@ -39,11 +39,7 @@ export class FoodService {
             throw new Error(`Couldn't update data: no item with such id (${id})`);
         }
 
-        try {
-            await this.foodRepository.update(id, updateFoodDto);
-        } catch (err) {
-            throw new Error(`Unable to update data with id (${id})`);
-        }
+        await this.foodRepository.update(id, updateFoodDto);
     }
 
     async remove(id: number): Promise<Food> {
