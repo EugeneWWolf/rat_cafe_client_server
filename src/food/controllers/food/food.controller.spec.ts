@@ -13,7 +13,7 @@ describe('FoodController', () => {
   let controller: FoodController;
   let service: DeepMocked<FoodService>;
 
-  var _preparation = async () => {
+  const _preparation = async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FoodController],
       providers: [FoodService]
@@ -26,12 +26,12 @@ describe('FoodController', () => {
     service = module.get(FoodService);
   };
 
-  var _ending = function() {
+  const _cleanup = function() {
     jest.clearAllMocks();
   };
 
   beforeEach(_preparation);
-  afterEach(_ending);
+  afterEach(_cleanup);
 
   it('controller should be defined', () => {
     expect(controller).toBeDefined();
@@ -39,7 +39,7 @@ describe('FoodController', () => {
 
   describe('create', () => {
     beforeEach(_preparation);
-    afterEach(_ending);
+    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.create).toBeDefined();
@@ -62,7 +62,7 @@ describe('FoodController', () => {
 
   describe('findAll', () => {
     beforeEach(_preparation);
-    afterEach(_ending);
+    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.findAll).toBeDefined();
@@ -91,7 +91,7 @@ describe('FoodController', () => {
 
   describe('findOne', () => {
     beforeEach(_preparation);
-    afterEach(_ending);
+    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.findOne).toBeDefined();
@@ -108,7 +108,7 @@ describe('FoodController', () => {
     });
 
     it('should throw an exception when data is not found in data storage', async () => {
-      service.findOne.mockImplementation((id) => {
+      service.findOne.mockImplementation(() => {
         throw new Error('Data not found');
       });
     
@@ -118,20 +118,22 @@ describe('FoodController', () => {
 
   describe('update', () => {
     beforeEach(_preparation);
-    afterEach(_ending);
+    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.update).toBeDefined();
     });
 
-    it('should let promise result when data is successfully updated', async () => {
+    it('should call update from repository once', async () => {
       const updatedDataPromise: Promise<void> = new Promise((resolve) => {
         resolve();
       });
 
       service.update.mockResolvedValueOnce(updatedDataPromise);
+
+      await controller.update(1, new UpdateFoodDto());
   
-      await expect(controller.update(1, new UpdateFoodDto())).resolves;
+      await expect(service.update).toHaveBeenCalledTimes(1);
     });
 
     it('should result in exception if data is not found', async () => {
@@ -145,7 +147,7 @@ describe('FoodController', () => {
 
   describe('remove', () => {
     beforeEach(_preparation);
-    afterEach(_ending);
+    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.remove).toBeDefined();
