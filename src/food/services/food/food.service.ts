@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateFoodDto } from 'src/food/dto/create-food.dto';
 import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
 import { Food } from 'src/food/entities/food.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FoodService {
@@ -25,7 +25,7 @@ export class FoodService {
             throw new Error("Couldn't find data: database is empty");
         }
 
-        return food;
+        return await food;
     }
 
     async findOne(id: number): Promise<Food> {
