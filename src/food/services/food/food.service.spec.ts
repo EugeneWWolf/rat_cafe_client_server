@@ -1,23 +1,45 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { FoodService } from './food.service';
-
-const mockFoodService = {};
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { createMock } from '@golevelup/ts-jest';
+import { Food } from 'src/food/entities/food.entity';
+import { Repository } from 'typeorm';
 
 describe('FoodService', () => {
   let service: FoodService;
+  let repositoryMock = createMock<Repository<Food>>();
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [FoodService],
-    })
-    .overrideProvider(FoodService)
-    .useValue(mockFoodService)
-    .compile();
+  const _preparation = async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        FoodService,
+        {
+          provide: getRepositoryToken(Food),
+          useValue: repositoryMock,
+        },
+      ],
+    }).compile();
 
     service = module.get<FoodService>(FoodService);
-  });
+  };
+
+  const _cleanup = function() {
+    jest.clearAllMocks();
+  };
+
+  beforeEach(_preparation);
+  afterEach(_cleanup);
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('create', () => {
+    beforeEach(_preparation);
+    afterEach(_cleanup);
+    
+    it('should be defined', () => {
+      expect(service.create).toBeDefined();
+    });
   });
 });
