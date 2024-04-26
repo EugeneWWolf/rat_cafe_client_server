@@ -26,12 +26,7 @@ describe('FoodController', () => {
     service = module.get(FoodService);
   };
 
-  const _cleanup = function() {
-    jest.clearAllMocks();
-  };
-
   beforeEach(_preparation);
-  afterEach(_cleanup);
 
   it('controller should be defined', () => {
     expect(controller).toBeDefined();
@@ -39,7 +34,6 @@ describe('FoodController', () => {
 
   describe('create', () => {
     beforeEach(_preparation);
-    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.create).toBeDefined();
@@ -62,7 +56,6 @@ describe('FoodController', () => {
 
   describe('findAll', () => {
     beforeEach(_preparation);
-    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.findAll).toBeDefined();
@@ -81,7 +74,7 @@ describe('FoodController', () => {
     });
 
     it('should throw exception if data storage is empty', async () => {
-      service.findAll.mockImplementation(() => {
+      service.findAll.mockImplementationOnce(() => {
         throw new Error('Database is empty');
       });
   
@@ -91,7 +84,6 @@ describe('FoodController', () => {
 
   describe('findOne', () => {
     beforeEach(_preparation);
-    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.findOne).toBeDefined();
@@ -108,7 +100,7 @@ describe('FoodController', () => {
     });
 
     it('should throw an exception when data is not found in data storage', async () => {
-      service.findOne.mockImplementation(() => {
+      service.findOne.mockImplementationOnce(() => {
         throw new Error('Data not found');
       });
     
@@ -118,7 +110,6 @@ describe('FoodController', () => {
 
   describe('update', () => {
     beforeEach(_preparation);
-    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.update).toBeDefined();
@@ -137,7 +128,7 @@ describe('FoodController', () => {
     });
 
     it('should result in exception if data is not found', async () => {
-      service.update.mockImplementation(() => {
+      service.update.mockImplementationOnce(() => {
         throw Error('Data not found');
       });
   
@@ -147,7 +138,6 @@ describe('FoodController', () => {
 
   describe('remove', () => {
     beforeEach(_preparation);
-    afterEach(_cleanup);
   
     it('should be defined', () => {
       expect(controller.remove).toBeDefined();
@@ -164,7 +154,7 @@ describe('FoodController', () => {
     });
 
     it('should result in exception if data not found', async () => {
-      service.remove.mockImplementation(() => {
+      service.remove.mockImplementationOnce(() => {
         throw Error('Data not found');
       });
   

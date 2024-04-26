@@ -23,12 +23,7 @@ describe('FoodService', () => {
     service = module.get<FoodService>(FoodService);
   };
 
-  const _cleanup = function() {
-    jest.clearAllMocks();
-  };
-
   beforeEach(_preparation);
-  afterEach(_cleanup);
 
   it('should be defined', () => {
     expect(service).toBeDefined();
@@ -36,7 +31,6 @@ describe('FoodService', () => {
 
   describe('create', () => {
     beforeEach(_preparation);
-    afterEach(_cleanup);
     
     it('should be defined', () => {
       expect(service.create).toBeDefined();
