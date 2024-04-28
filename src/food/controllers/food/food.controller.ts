@@ -3,7 +3,6 @@ import { CreateFoodDto } from 'src/food/dto/create-food.dto';
 import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
 import { Food } from 'src/food/entities/food.entity';
 import { FoodService } from 'src/food/services/food/food.service';
-import { UpdateResult } from 'typeorm';
 
 @Controller('food')
 export class FoodController {
@@ -11,7 +10,11 @@ export class FoodController {
 
     @Post()
     async create(@Body() createFoodDto: CreateFoodDto): Promise<Food> {
-        return await this.foodService.create(createFoodDto);
+        try {
+            return await this.foodService.create(createFoodDto);
+        } catch (err) {
+            throw new InternalServerErrorException(`Internal database error: ${err.message}`);
+        }
     }
 
     @Get()

@@ -41,16 +41,17 @@ describe('FoodController', () => {
 
     it('should return new record made from DTO', async () => {
       const dto = new CreateFoodDto();
-    
-      const foodPromise: Promise<Food> = new Promise((resolve) => {
-        resolve(new Food());
-      });
   
-      service.create.mockResolvedValueOnce(foodPromise);
+      service.create.mockResolvedValueOnce(new Food());
   
       const getRecord = controller.create(dto);
     
       await expect(getRecord).resolves.toBeInstanceOf(Food);
+    });
+
+    it('should result in 500 status code if data is not correct', async () => {
+      service.create.mockRejectedValueOnce(new Error('Price is less than 100'));
+      await expect(controller.create(new CreateFoodDto)).rejects.toThrow(InternalServerErrorException);
     });
   });
 
@@ -62,11 +63,8 @@ describe('FoodController', () => {
     });
 
     it('should return all records from data storage', async () => {
-      const foodPromise: Promise<Food[]> = new Promise((resolve) => {
-        resolve(new Array<Food>(new Food, new Food));
-      });
   
-      service.findAll.mockResolvedValueOnce(foodPromise);
+      service.findAll.mockResolvedValueOnce(new Array<Food>(new Food, new Food));
   
       const getRecord = controller.findAll();
   
@@ -74,11 +72,9 @@ describe('FoodController', () => {
     });
 
     it('should throw exception if data storage is empty', async () => {
-      service.findAll.mockImplementationOnce(() => {
-        throw new Error('Database is empty');
-      });
+      service.findAll.mockRejectedValueOnce(new Error('Data is not found'));
   
-      await expect(controller.findAll()).rejects.toThrow(InternalServerErrorException);
+      await expect(controller.findAll()).rejects.toThrow("Database is empty");
     });
   });
 
@@ -90,21 +86,19 @@ describe('FoodController', () => {
     });
 
     it('should return a record when data is found by id in data storage', async () => {
-      const foodPromise: Promise<Food> = new Promise((resolve) => {
-        resolve(new Food);
-      });
-  
-      service.findOne.mockResolvedValueOnce(foodPromise);
+      service.findOne.mockResolvedValueOnce(new Food);
     
-      await expect(controller.findOne(2)).resolves.toBeInstanceOf(Food);
+      const id = 2;
+    
+      await expect(controller.findOne(id)).resolves.toBeInstanceOf(Food);
     });
 
     it('should throw an exception when data is not found in data storage', async () => {
-      service.findOne.mockImplementationOnce(() => {
-        throw new Error('Data not found');
-      });
+      service.findOne.mockRejectedValueOnce(new Error('Data not found'));
+
+      const id = 2;
     
-      await expect(controller.findOne(2)).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne(id)).rejects.toThrow(`Cannot find item with id ${id}`);
     });
   });
 
@@ -116,11 +110,7 @@ describe('FoodController', () => {
     });
 
     it('should call update from repository once', async () => {
-      const updatedDataPromise: Promise<void> = new Promise((resolve) => {
-        resolve();
-      });
-
-      service.update.mockResolvedValueOnce(updatedDataPromise);
+      service.update.mockResolvedValueOnce();
 
       await controller.update(1, new UpdateFoodDto());
   
@@ -128,11 +118,11 @@ describe('FoodController', () => {
     });
 
     it('should result in exception if data is not found', async () => {
-      service.update.mockImplementationOnce(() => {
-        throw Error('Data not found');
-      });
+      service.update.mockRejectedValueOnce(new Error('Data not found'));
   
-      await expect(controller.update(1, new UpdateFoodDto())).rejects.toThrow(NotFoundException);
+      const id = 2;
+
+      await expect(controller.update(id, new UpdateFoodDto())).rejects.toThrow(`Cannot update item with id ${id}`);
     });
   });
 
@@ -144,21 +134,17 @@ describe('FoodController', () => {
     });
 
     it('remove should return a deleted entry', async () => {
-      const foodPromise: Promise<Food> = new Promise((resolve) => {
-        resolve(new Food);
-      });
-  
-      service.remove.mockResolvedValueOnce(foodPromise);
+      service.remove.mockResolvedValueOnce(new Food);
   
       await expect(controller.remove(1)).resolves.toBeInstanceOf(Food);
     });
 
     it('should result in exception if data not found', async () => {
-      service.remove.mockImplementationOnce(() => {
-        throw Error('Data not found');
-      });
+      service.remove.mockRejectedValueOnce(new Error('Data not found'));
   
-      await expect(controller.remove(1)).rejects.toThrow(NotFoundException);
+      const id = 2;
+
+      await expect(controller.remove(id)).rejects.toThrow(`Cannot delete item with id ${id}`);
     });
   });
 });
