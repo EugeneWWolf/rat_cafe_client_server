@@ -6,6 +6,7 @@ import { Food } from 'src/food/entities/food.entity';
 import { Repository } from 'typeorm';
 import { CreateFoodDto } from 'src/food/dto/create-food.dto';
 import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
+import { fakeFoodHelper } from './helpers';
 
 describe('FoodService', () => {
   let service: FoodService;
@@ -39,18 +40,22 @@ describe('FoodService', () => {
     });
 
     it('should call create from repository once', async () => {
+      const food = fakeFoodHelper();
+
       repositoryMock.create.mockReturnValueOnce(new Food());
       
-      await service.create(new CreateFoodDto());
+      await service.create(food);
 
-      expect(repositoryMock.create).toHaveBeenCalledWith(new CreateFoodDto());
-      expect (repositoryMock.create).toHaveBeenCalledTimes(1);
+      expect(repositoryMock.create).toHaveBeenCalledWith(food);
+      expect(repositoryMock.create).toHaveBeenCalledTimes(1);
     });
 
     it('should return Food object', async () => {
+      const food = fakeFoodHelper();
+
       repositoryMock.save.mockResolvedValueOnce(new Food());
 
-      await expect(service.create(new CreateFoodDto())).resolves.toBeInstanceOf(Food);
+      expect(service.create(food)).resolves.toBeInstanceOf(Food);
     });
   });
 
@@ -64,7 +69,7 @@ describe('FoodService', () => {
     it('should result in error if data storage is empty', async () => {
       repositoryMock.find.mockResolvedValueOnce(null as Array<Food>);
       
-      await expect(service.findAll()).rejects.toThrow("Couldn't find data: database is empty");
+      expect(service.findAll()).rejects.toThrow("Couldn't find data: database is empty");
     });
 
     it('should return data when data storage is not empty', async () => {
@@ -72,7 +77,7 @@ describe('FoodService', () => {
 
       repositoryMock.find.mockResolvedValueOnce(data);
 
-      await expect(service.findAll()).resolves.toStrictEqual(data);
+      expect(service.findAll()).resolves.toStrictEqual(data);
     });
   });
 
@@ -86,13 +91,13 @@ describe('FoodService', () => {
     it('should reject promise if data not found', async () => {
       repositoryMock.findOneByOrFail.mockRejectedValueOnce(new Error('Data not found'));
 
-      await expect(service.findOne(2)).rejects.toThrow('Data not found');
+      expect(service.findOne(2)).rejects.toThrow('Data not found');
     });
 
     it('should return data if found', async () => {
       repositoryMock.findOneByOrFail.mockResolvedValueOnce(new Food);
 
-      await expect(service.findOne(2)).resolves.toBeInstanceOf(Food);
+      expect(service.findOne(2)).resolves.toBeInstanceOf(Food);
     });
   });
 
@@ -108,7 +113,7 @@ describe('FoodService', () => {
 
       const id = 2;
 
-      await expect(service.update(id, new UpdateFoodDto())).rejects.toThrow(`Couldn't update data: no item with such id (${id})`);
+      expect(service.update(id, new UpdateFoodDto())).rejects.toThrow(`Couldn't update data: no item with such id (${id})`);
     });
 
     it('should call update from repository once if data is found', async () => {
@@ -130,13 +135,13 @@ describe('FoodService', () => {
 
       const id = 2;
 
-      await expect(service.remove(id)).rejects.toThrow(`Couldn't remove data: no item with such id (${id})`);
+      expect(service.remove(id)).rejects.toThrow(`Couldn't remove data: no item with such id (${id})`);
     });
 
     it('should return deleted item if found', async () => {
       repositoryMock.remove.mockResolvedValueOnce(new Food());
 
-      await expect(service.remove(2)).resolves.toBeInstanceOf(Food);
+      expect(service.remove(2)).resolves.toBeInstanceOf(Food);
     });
   });
 });
