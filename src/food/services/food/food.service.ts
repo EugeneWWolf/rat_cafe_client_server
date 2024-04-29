@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateFoodDto } from 'src/food/dto/create-food.dto';
 import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
-import { Food } from 'src/food/entities/food.entity';
+import { Food, FoodCategory } from 'src/food/entities/food.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -13,9 +13,15 @@ export class FoodService {
     ) {}
 
     async create(createFoodDto: CreateFoodDto): Promise<Food> {
-        const food = this.foodRepository.create(createFoodDto);
+        createFoodDto.type = (createFoodDto.type.toLowerCase() as FoodCategory);
+        
+        try {
+            const food = this.foodRepository.create(createFoodDto);
 
-        return await this.foodRepository.save(food);
+            return await this.foodRepository.save(food);
+        } catch(err) {
+            throw new Error(`Some error occured while inserting data (${err.message})`);
+        }
     }
 
     async findAll(): Promise<Food[]> {
