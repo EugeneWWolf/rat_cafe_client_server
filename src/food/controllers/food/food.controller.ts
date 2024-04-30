@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateFoodDto } from 'src/food/dto/create-food.dto';
 import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
 import { Food } from 'src/food/entities/food.entity';
@@ -13,7 +13,7 @@ export class FoodController {
         try {
             return await this.foodService.create(createFoodDto);
         } catch (err) {
-            throw new InternalServerErrorException(`Internal database error: ${err.message}`);
+            throw new InternalServerErrorException({message: err.message});
         }
     }
 
