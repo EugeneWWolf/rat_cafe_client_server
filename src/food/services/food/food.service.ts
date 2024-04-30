@@ -12,9 +12,7 @@ export class FoodService {
         private readonly foodRepository: Repository<Food>,
     ) {}
 
-    async create(createFoodDto: CreateFoodDto): Promise<Food> {
-        createFoodDto.type = (createFoodDto.type.toLowerCase() as FoodCategory);
-        
+    async create(createFoodDto: CreateFoodDto): Promise<Food> {  
         try {
             const food = this.foodRepository.create(createFoodDto);
 
