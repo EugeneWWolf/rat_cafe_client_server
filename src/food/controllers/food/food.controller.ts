@@ -22,7 +22,7 @@ export class FoodController {
         try {
             return await this.foodService.findAll();
         } catch(err) {
-            throw new InternalServerErrorException("Database is empty");
+            throw new InternalServerErrorException({message: err.message});
         }
     }
 
@@ -31,7 +31,7 @@ export class FoodController {
         try {
             return await this.foodService.findOne(id);
         } catch(err) {
-            throw new NotFoundException(`Cannot find item with id ${id}`);
+            throw new NotFoundException({message: err.message});
         }
     }
 
@@ -40,7 +40,7 @@ export class FoodController {
         try {
             await this.foodService.update(id, updateFoodDto);
         } catch(err) {
-            throw new NotFoundException(`Cannot update item with id ${id}`);
+            throw new NotFoundException({message: err.message});
         }
     }
 
@@ -49,7 +49,7 @@ export class FoodController {
         try {
             return await this.foodService.remove(id);
         } catch(err) {
-            throw new NotFoundException(`Cannot delete item with id ${id}`);
+            throw new NotFoundException({message: err.message});
         }
     }
 }

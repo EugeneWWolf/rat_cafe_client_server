@@ -74,7 +74,7 @@ describe('FoodController', () => {
     it('should throw exception if data storage is empty', async () => {
       service.findAll.mockRejectedValueOnce(new Error('Data is not found'));
   
-      expect(controller.findAll()).rejects.toThrow("Database is empty");
+      expect(controller.findAll()).rejects.toThrow(InternalServerErrorException);
     });
   });
 
@@ -98,7 +98,7 @@ describe('FoodController', () => {
 
       const id = 2;
     
-      expect(controller.findOne(id)).rejects.toThrow(`Cannot find item with id ${id}`);
+      expect(controller.findOne(id)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -122,7 +122,7 @@ describe('FoodController', () => {
   
       const id = 2;
 
-      expect(controller.update(id, new UpdateFoodDto())).rejects.toThrow(`Cannot update item with id ${id}`);
+      expect(controller.update(id, new UpdateFoodDto())).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -144,7 +144,7 @@ describe('FoodController', () => {
   
       const id = 2;
 
-      expect(controller.remove(id)).rejects.toThrow(`Cannot delete item with id ${id}`);
+      expect(controller.remove(id)).rejects.toThrow(NotFoundException);
     });
   });
 });

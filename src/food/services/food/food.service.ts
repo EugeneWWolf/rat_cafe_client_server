@@ -18,12 +18,13 @@ export class FoodService {
 
             return await this.foodRepository.save(food);
         } catch(err) {
-            throw new Error(`Some error occured while inserting data (${err.message})`);
+            throw err;
         }
     }
 
     async findAll(): Promise<Food[]> {
-        const food = await this.foodRepository.find();
+        const food = await this.foodRepository.find()
+            .catch((error) => {throw error});
 
         if (!food) {
             throw new Error("Couldn't find data: database is empty");
@@ -37,17 +38,23 @@ export class FoodService {
     }
 
     async update(id: number, updateFoodDto: UpdateFoodDto): Promise<void> {
-        const food = await this.foodRepository.findOneBy({ id });
+        const food = await this.foodRepository.findOneBy({ id })
+            .catch((error) => {throw error});
     
         if (!food) {
             throw new Error(`Couldn't update data: no item with such id (${id})`);
         }
 
-        await this.foodRepository.update(id, updateFoodDto);
+        try {
+            await this.foodRepository.update(id, updateFoodDto);
+        } catch(err) {
+            throw err;
+        }
     }
 
     async remove(id: number): Promise<Food> {
-        const food = await this.foodRepository.findOneBy({ id });
+        const food = await this.foodRepository.findOneBy({ id })
+            ;
     
         if (!food) {
             throw new Error(`Couldn't remove data: no item with such id (${id})`);
