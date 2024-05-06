@@ -1,22 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { FoodModule } from 'src/food/food.module';
-import { Food, FoodCategory } from 'src/food/entities/food.entity';
+import { ProductModule } from 'src/product/product.module';
+import { Product, ProductCategory } from 'src/product/entities/product.entity';
 import { Repository } from 'typeorm';
-import { FoodService } from 'src/food/services/food/food.service';
-import { createFoodDTO } from './helpers';
+import { ProductService } from 'src/product/services/product/product.service';
+import { createProductDTO } from './helpers';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-  let foodRepository: Repository<Food>;
-  let service: FoodService;
+  let productRepository: Repository<Product>;
+  let service: ProductService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-        FoodModule,
+        ProductModule,
         TypeOrmModule.forRoot({
           type: 'postgres',
           host: 'localhost',
@@ -24,7 +24,7 @@ describe('AppController (e2e)', () => {
           username: 'postgres',
           password: '1488',
           database: 'rat_cafe_testing',
-          entities: [Food],
+          entities: [Product],
           synchronize: true,
       }),
     ]
@@ -35,12 +35,12 @@ describe('AppController (e2e)', () => {
 
     await app.init();
   
-    foodRepository = moduleFixture.get('FoodRepository');
-    service = new FoodService(foodRepository);
+    productRepository = moduleFixture.get('ProductRepository');
+    service = new ProductService(productRepository);
   });
 
   afterEach(async () => {
-    await foodRepository.query('DELETE FROM Food;');
+    await productRepository.query('DELETE FROM product;');
   });
 
   afterEach(done => {
@@ -48,13 +48,13 @@ describe('AppController (e2e)', () => {
     done();
   })
 
-  it('/food (GET)', async () => {
-    const dataToInsert = createFoodDTO('Latte', 230, FoodCategory.COFFEE, 'Lorem Ipsum Sit Amet');
+  it('/product (GET)', async () => {
+    const dataToInsert = createProductDTO('Latte', 230, ProductCategory.COFFEE, 'Lorem Ipsum Sit Amet');
 
     await service.create(dataToInsert);
 
     const res = await request(app.getHttpServer())
-      .get('/food')
+      .get('/product')
       .set('Accept', 'application/json')
   
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -64,20 +64,20 @@ describe('AppController (e2e)', () => {
     expect(typeof res.body[0]["id"]).toEqual('number');
     expect(res.body[0]["name"]).toEqual('Latte');
     expect(res.body[0]["price"]).toEqual(230);
-    expect(Object.values(FoodCategory)).toContain(res.body[0]["type"]);
+    expect(Object.values(ProductCategory)).toContain(res.body[0]["type"]);
     expect(res.body[0]["description"]).toBeDefined();
   });
 
-  it('/food/id (GET)', async () => {
-    const dataToInsert = createFoodDTO('Latte', 230, FoodCategory.COFFEE, 'Lorem Ipsum Sit Amet');
+  it('/product/id (GET)', async () => {
+    const dataToInsert = createProductDTO('Latte', 230, ProductCategory.COFFEE, 'Lorem Ipsum Sit Amet');
 
     await service.create(dataToInsert);
 
-    const queryResult = await foodRepository.query(`SELECT id FROM food WHERE name='Latte';`);
+    const queryResult = await productRepository.query(`SELECT id FROM product WHERE name='Latte';`);
     const id = queryResult[0]["id"];
 
     const res = await request(app.getHttpServer())
-      .get(`/food/${id}`)
+      .get(`/product/${id}`)
       .set('Accept', 'application/json')
 
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -87,13 +87,13 @@ describe('AppController (e2e)', () => {
     expect(typeof res.body["id"]).toEqual('number');
     expect(res.body["name"]).toEqual('Latte');
     expect(res.body["price"]).toEqual(230);
-    expect(Object.values(FoodCategory)).toContain(res.body["type"]);
+    expect(Object.values(ProductCategory)).toContain(res.body["type"]);
     expect(res.body["description"]).toBeDefined();
   });
 
-  it('/food (POST)', async () => {
+  it('/product (POST)', async () => {
     const res = await request(app.getHttpServer())
-      .post('/food')
+      .post('/product')
       .send({name: 'Quaso', price: '999', type: 'Dessert', description: 'Very tasty handmade quaso'})
       .set('Accept', 'application/json')
 
@@ -107,22 +107,22 @@ describe('AppController (e2e)', () => {
       expect(res.body["description"]).toBeDefined();
   });
 
-  it('/food/id (PATCH)', async () => {
-    const dataToInsert = createFoodDTO('Latte', 230, FoodCategory.COFFEE, 'Lorem Ipsum Sit Amet');
+  it('/product/id (PATCH)', async () => {
+    const dataToInsert = createProductDTO('Latte', 230, ProductCategory.COFFEE, 'Lorem Ipsum Sit Amet');
 
     await service.create(dataToInsert);
 
-    const queryResult = await foodRepository.query(`SELECT id FROM food WHERE name='Latte';`);
+    const queryResult = await productRepository.query(`SELECT id FROM product WHERE name='Latte';`);
     const id = queryResult[0]["id"];
 
     const res = await request(app.getHttpServer())
-      .patch(`/food/${id}`)
+      .patch(`/product/${id}`)
       .send({price: '200'})
       .set('Accept', 'application/json')
 
     expect(res.statusCode).toEqual(200);
 
-    const updatedData = await foodRepository.query(`SELECT * FROM food WHERE name='Latte';`);
+    const updatedData = await productRepository.query(`SELECT * FROM product WHERE name='Latte';`);
 
     expect(typeof updatedData[0]["id"]).toEqual('number');
     expect(updatedData[0]["name"]).toEqual('Latte');
@@ -131,19 +131,19 @@ describe('AppController (e2e)', () => {
     expect(updatedData[0]["description"]).toBeDefined();
   });
 
-  it('/food/id (DELETE)', async () => {
-    const dataToInsert = createFoodDTO('Latte', 230, FoodCategory.COFFEE, 'Lorem Ipsum Sit Amet');
+  it('/product/id (DELETE)', async () => {
+    const dataToInsert = createProductDTO('Latte', 230, ProductCategory.COFFEE, 'Lorem Ipsum Sit Amet');
 
     await service.create(dataToInsert);
 
-    const queryResult = await foodRepository.query(`SELECT id FROM food WHERE name='Latte';`);
+    const queryResult = await productRepository.query(`SELECT id FROM product WHERE name='Latte';`);
     const id = queryResult[0]["id"];
 
     const res = await request(app.getHttpServer())
-      .delete(`/food/${id}`)
+      .delete(`/product/${id}`)
       .set('Accept', 'application/json')
 
     expect(res.statusCode).toEqual(200);
-    expect(foodRepository.count()).resolves.toEqual(0);
+    expect(productRepository.count()).resolves.toEqual(0);
   });
 });

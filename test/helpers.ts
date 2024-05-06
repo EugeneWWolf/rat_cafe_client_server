@@ -1,8 +1,8 @@
-import { CreateFoodDto } from "src/food/dto/create-food.dto";
-import { FoodCategory } from "src/food/entities/food.entity";
+import { CreateProductDto } from "src/product/dto/create-product.dto";
+import { ProductCategory } from "src/product/entities/product.entity";
 
-export function createFoodDTO(name: string, price: number, type: FoodCategory, description?: string): CreateFoodDto {
-    const dto = new CreateFoodDto;
+export function createProductDTO(name: string, price: number, type: ProductCategory, description?: string): CreateProductDto {
+    const dto = new CreateProductDto;
     dto.name = name;
     dto.price = price;
     dto.type = type;

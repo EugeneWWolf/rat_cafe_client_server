@@ -1,5 +1,5 @@
 import { ValidationError, validate } from "class-validator";
-import { CreateFoodDto } from "../create-food.dto";
+import { CreateProductDto } from "../create-product.dto";
 
 export function stringified(errors: ValidationError[]): string {
     return JSON.stringify(errors)
@@ -7,7 +7,7 @@ export function stringified(errors: ValidationError[]): string {
 
 describe('isNotBlank validator', () => {
     it('should accept valid data', async () => {
-        const data = new CreateFoodDto();
+        const data = new CreateProductDto();
 
         data.description = 'Lorem Ipsum';
 
@@ -17,7 +17,7 @@ describe('isNotBlank validator', () => {
     });
 
     it('should reject if description is blank', async () => {
-        const data = new CreateFoodDto();
+        const data = new CreateProductDto();
 
         data.description = '   ';
 

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateFoodDto } from 'src/food/dto/create-food.dto';
-import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
-import { Food, FoodCategory } from 'src/food/entities/food.entity';
+import { CreateProductDto } from 'src/product/dto/create-product.dto';
+import { UpdateProductDto } from 'src/product/dto/update-product.dto';
+import { Product, ProductCategory } from 'src/product/entities/product.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class FoodService {
+export class ProductService {
     constructor(
-        @InjectRepository(Food)
-        private readonly foodRepository: Repository<Food>,
+        @InjectRepository(Product)
+        private readonly foodRepository: Repository<Product>,
     ) {}
 
-    async create(createFoodDto: CreateFoodDto): Promise<Food> {  
+    async create(createFoodDto: CreateProductDto): Promise<Product> {  
         try {
             const food = this.foodRepository.create(createFoodDto);
 
@@ -22,7 +22,7 @@ export class FoodService {
         }
     }
 
-    async findAll(): Promise<Food[]> {
+    async findAll(): Promise<Product[]> {
         const food = await this.foodRepository.find()
             .catch((error) => {throw error});
 
@@ -33,11 +33,11 @@ export class FoodService {
         return await food;
     }
 
-    async findOne(id: number): Promise<Food> {
+    async findOne(id: number): Promise<Product> {
         return await this.foodRepository.findOneByOrFail({ id });
     }
 
-    async update(id: number, updateFoodDto: UpdateFoodDto): Promise<void> {
+    async update(id: number, updateFoodDto: UpdateProductDto): Promise<void> {
         const food = await this.foodRepository.findOneBy({ id })
             .catch((error) => {throw error});
     
@@ -52,7 +52,7 @@ export class FoodService {
         }
     }
 
-    async remove(id: number): Promise<Food> {
+    async remove(id: number): Promise<Product> {
         const food = await this.foodRepository.findOneBy({ id })
             ;
     

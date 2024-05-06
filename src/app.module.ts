@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { FoodModule } from './food/food.module';
+import { ProductModule } from './product/product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Food } from './food/entities/food.entity';
+import { Product } from './product/entities/product.entity';
 
 @Module({
   imports: [
@@ -12,10 +12,10 @@ import { Food } from './food/entities/food.entity';
       username: 'postgres',
       password: '1488',
       database: 'rat_cafe',
-      entities: [Food],
+      entities: [Product],
       synchronize: true,
   }),
-  FoodModule,
+  ProductModule,
 ],
   controllers: [],
   providers: [],

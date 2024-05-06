@@ -1,29 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FoodController } from './food.controller';
-import { FoodService } from 'src/food/services/food/food.service';
+import { FoodController } from './product.controller';
+import { ProductService } from 'src/product/services/product/product.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { CreateFoodDto } from 'src/food/dto/create-food.dto';
-import { Food } from 'src/food/entities/food.entity';
+import { CreateProductDto } from 'src/product/dto/create-product.dto';
+import { Product } from 'src/product/entities/product.entity';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
+import { UpdateProductDto } from 'src/product/dto/update-product.dto';
 
 const mockFoodService = {};
 
 describe('FoodController', () => {
   let controller: FoodController;
-  let service: DeepMocked<FoodService>;
+  let service: DeepMocked<ProductService>;
 
   const _preparation = async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FoodController],
-      providers: [FoodService]
+      providers: [ProductService]
     })
-    .overrideProvider(FoodService)
-    .useValue(createMock<FoodService>())
+    .overrideProvider(ProductService)
+    .useValue(createMock<ProductService>())
     .compile();
 
     controller = module.get<FoodController>(FoodController);
-    service = module.get(FoodService);
+    service = module.get(ProductService);
   };
 
   beforeEach(_preparation);
@@ -40,18 +40,18 @@ describe('FoodController', () => {
     });
 
     it('should return new record made from DTO', async () => {
-      const dto = new CreateFoodDto();
+      const dto = new CreateProductDto();
   
-      service.create.mockResolvedValueOnce(new Food());
+      service.create.mockResolvedValueOnce(new Product());
   
       const getRecord = controller.create(dto);
     
-      expect(getRecord).resolves.toBeInstanceOf(Food);
+      expect(getRecord).resolves.toBeInstanceOf(Product);
     });
 
     it('should result in 500 status code if data is not correct', async () => {
       service.create.mockRejectedValueOnce(new Error('Price is less than 100'));
-      expect(controller.create(new CreateFoodDto)).rejects.toThrow(InternalServerErrorException);
+      expect(controller.create(new CreateProductDto)).rejects.toThrow(InternalServerErrorException);
     });
   });
 
@@ -64,11 +64,11 @@ describe('FoodController', () => {
 
     it('should return all records from data storage', async () => {
   
-      service.findAll.mockResolvedValueOnce(new Array<Food>(new Food, new Food));
+      service.findAll.mockResolvedValueOnce(new Array<Product>(new Product, new Product));
   
       const getRecord = controller.findAll();
   
-      expect(getRecord).resolves.toStrictEqual(new Array<Food>(new Food, new Food));
+      expect(getRecord).resolves.toStrictEqual(new Array<Product>(new Product, new Product));
     });
 
     it('should throw exception if data storage is empty', async () => {
@@ -86,11 +86,11 @@ describe('FoodController', () => {
     });
 
     it('should return a record when data is found by id in data storage', async () => {
-      service.findOne.mockResolvedValueOnce(new Food);
+      service.findOne.mockResolvedValueOnce(new Product);
     
       const id = 2;
     
-      expect(controller.findOne(id)).resolves.toBeInstanceOf(Food);
+      expect(controller.findOne(id)).resolves.toBeInstanceOf(Product);
     });
 
     it('should throw an exception when data is not found in data storage', async () => {
@@ -112,7 +112,7 @@ describe('FoodController', () => {
     it('should call update from repository once', async () => {
       service.update.mockResolvedValueOnce();
 
-      await controller.update(1, new UpdateFoodDto());
+      await controller.update(1, new UpdateProductDto());
   
       expect(service.update).toHaveBeenCalledTimes(1);
     });
@@ -122,7 +122,7 @@ describe('FoodController', () => {
   
       const id = 2;
 
-      expect(controller.update(id, new UpdateFoodDto())).rejects.toThrow(NotFoundException);
+      expect(controller.update(id, new UpdateProductDto())).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -134,9 +134,9 @@ describe('FoodController', () => {
     });
 
     it('remove should return a deleted entry', async () => {
-      service.remove.mockResolvedValueOnce(new Food);
+      service.remove.mockResolvedValueOnce(new Product);
   
-      expect(controller.remove(1)).resolves.toBeInstanceOf(Food);
+      expect(controller.remove(1)).resolves.toBeInstanceOf(Product);
     });
 
     it('should result in exception if data not found', async () => {

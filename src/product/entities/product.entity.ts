@@ -1,6 +1,6 @@
 import { BeforeInsert, Check, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-export enum FoodCategory {
+export enum ProductCategory {
     COFFEE = "coffee",
     SALAD = "salad",
     SOUP = "soup",
@@ -9,11 +9,11 @@ export enum FoodCategory {
 
 @Entity()
 @Check('"price" >= 100')
-export class Food {
+export class Product {
 
     @BeforeInsert()
-    foodCategoryToLowerCase() {
-        this.type = this.type.toLowerCase() as FoodCategory;
+    productCategoryToLowerCase() {
+        this.type = this.type.toLowerCase() as ProductCategory;
     }
 
     @PrimaryGeneratedColumn()
@@ -24,9 +24,9 @@ export class Food {
 
     @Column({
         type: "enum",
-        enum: FoodCategory
+        enum: ProductCategory
     })
-    type: FoodCategory;
+    type: ProductCategory;
 
     @Column()
     price: number;

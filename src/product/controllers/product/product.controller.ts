@@ -1,15 +1,15 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
-import { CreateFoodDto } from 'src/food/dto/create-food.dto';
-import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
-import { Food } from 'src/food/entities/food.entity';
-import { FoodService } from 'src/food/services/food/food.service';
+import { CreateProductDto } from 'src/product/dto/create-product.dto';
+import { UpdateProductDto } from 'src/product/dto/update-product.dto';
+import { Product } from 'src/product/entities/product.entity';
+import { ProductService } from 'src/product/services/product/product.service';
 
-@Controller('food')
+@Controller('product')
 export class FoodController {
-    constructor(private readonly foodService: FoodService) {}
+    constructor(private readonly foodService: ProductService) {}
 
     @Post()
-    async create(@Body() createFoodDto: CreateFoodDto): Promise<Food> {
+    async create(@Body() createFoodDto: CreateProductDto): Promise<Product> {
         try {
             return await this.foodService.create(createFoodDto);
         } catch (err) {
@@ -18,7 +18,7 @@ export class FoodController {
     }
 
     @Get()
-    async findAll(): Promise<Food[]> {
+    async findAll(): Promise<Product[]> {
         try {
             return await this.foodService.findAll();
         } catch(err) {
@@ -27,7 +27,7 @@ export class FoodController {
     }
 
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number): Promise<Food> {
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<Product> {
         try {
             return await this.foodService.findOne(id);
         } catch(err) {
@@ -36,7 +36,7 @@ export class FoodController {
     }
 
     @Patch(':id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body() updateFoodDto: UpdateFoodDto): Promise<void> {
+    async update(@Param('id', ParseIntPipe) id: number, @Body() updateFoodDto: UpdateProductDto): Promise<void> {
         try {
             await this.foodService.update(id, updateFoodDto);
         } catch(err) {
@@ -45,7 +45,7 @@ export class FoodController {
     }
 
     @Delete(':id')
-    async remove(@Param('id', ParseIntPipe) id: number): Promise<Food> {
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<Product> {
         try {
             return await this.foodService.remove(id);
         } catch(err) {

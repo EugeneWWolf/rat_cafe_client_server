@@ -1,29 +1,29 @@
 import { Test } from '@nestjs/testing';
-import { FoodService } from './food.service';
+import { ProductService } from './product.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMock } from '@golevelup/ts-jest';
-import { Food } from 'src/food/entities/food.entity';
+import { Product } from 'src/product/entities/product.entity';
 import { Repository } from 'typeorm';
-import { CreateFoodDto } from 'src/food/dto/create-food.dto';
-import { UpdateFoodDto } from 'src/food/dto/update-food.dto';
+import { CreateProductDto } from 'src/product/dto/create-product.dto';
+import { UpdateProductDto } from 'src/product/dto/update-product.dto';
 import { fakeFoodHelper } from './helpers';
 
 describe('FoodService', () => {
-  let service: FoodService;
-  let repositoryMock = createMock<Repository<Food>>();
+  let service: ProductService;
+  let repositoryMock = createMock<Repository<Product>>();
 
   const _preparation = async () => {
     const module = await Test.createTestingModule({
       providers: [
-        FoodService,
+        ProductService,
         {
-          provide: getRepositoryToken(Food),
+          provide: getRepositoryToken(Product),
           useValue: repositoryMock,
         },
       ],
     }).compile();
 
-    service = module.get<FoodService>(FoodService);
+    service = module.get<ProductService>(ProductService);
   };
 
   beforeEach(_preparation);
@@ -42,7 +42,7 @@ describe('FoodService', () => {
     it('should call create from repository once', async () => {
       const food = fakeFoodHelper();
 
-      repositoryMock.create.mockReturnValueOnce(new Food());
+      repositoryMock.create.mockReturnValueOnce(new Product());
       
       await service.create(food);
 
@@ -53,9 +53,9 @@ describe('FoodService', () => {
     it('should return Food object', async () => {
       const food = fakeFoodHelper();
 
-      repositoryMock.save.mockResolvedValueOnce(new Food());
+      repositoryMock.save.mockResolvedValueOnce(new Product());
 
-      expect(service.create(food)).resolves.toBeInstanceOf(Food);
+      expect(service.create(food)).resolves.toBeInstanceOf(Product);
     });
   });
 
@@ -67,13 +67,13 @@ describe('FoodService', () => {
     });
 
     it('should result in error if data storage is empty', async () => {
-      repositoryMock.find.mockResolvedValueOnce(null as Array<Food>);
+      repositoryMock.find.mockResolvedValueOnce(null as Array<Product>);
       
       expect(service.findAll()).rejects.toThrow("Couldn't find data: database is empty");
     });
 
     it('should return data when data storage is not empty', async () => {
-      const data = new Array<Food>(new Food, new Food);
+      const data = new Array<Product>(new Product, new Product);
 
       repositoryMock.find.mockResolvedValueOnce(data);
 
@@ -95,9 +95,9 @@ describe('FoodService', () => {
     });
 
     it('should return data if found', async () => {
-      repositoryMock.findOneByOrFail.mockResolvedValueOnce(new Food);
+      repositoryMock.findOneByOrFail.mockResolvedValueOnce(new Product);
 
-      expect(service.findOne(2)).resolves.toBeInstanceOf(Food);
+      expect(service.findOne(2)).resolves.toBeInstanceOf(Product);
     });
   });
 
@@ -109,15 +109,15 @@ describe('FoodService', () => {
     });
 
     it('should result in error if data not found', async () => {
-      repositoryMock.findOneBy.mockResolvedValueOnce(null as Food);
+      repositoryMock.findOneBy.mockResolvedValueOnce(null as Product);
 
       const id = 2;
 
-      expect(service.update(id, new UpdateFoodDto())).rejects.toThrow(`Couldn't update data: no item with such id (${id})`);
+      expect(service.update(id, new UpdateProductDto())).rejects.toThrow(`Couldn't update data: no item with such id (${id})`);
     });
 
     it('should call update from repository once if data is found', async () => {
-      await service.update(2, new UpdateFoodDto());
+      await service.update(2, new UpdateProductDto());
 
       expect(repositoryMock.update).toHaveBeenCalledTimes(1);
     });
@@ -131,7 +131,7 @@ describe('FoodService', () => {
     });
 
     it('should result in error if data not found', async () => {
-      repositoryMock.findOneBy.mockResolvedValueOnce(null as Food);
+      repositoryMock.findOneBy.mockResolvedValueOnce(null as Product);
 
       const id = 2;
 
@@ -139,9 +139,9 @@ describe('FoodService', () => {
     });
 
     it('should return deleted item if found', async () => {
-      repositoryMock.remove.mockResolvedValueOnce(new Food());
+      repositoryMock.remove.mockResolvedValueOnce(new Product());
 
-      expect(service.remove(2)).resolves.toBeInstanceOf(Food);
+      expect(service.remove(2)).resolves.toBeInstanceOf(Product);
     });
   });
 });
