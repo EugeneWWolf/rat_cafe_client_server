@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from "class-validator";
-import { IsNotBlank } from "./custom_validators/isNotBlank";
+import { IsNotBlank } from "src/class_validator/custom_validators/isNotBlank";
 
 export class CreateCustomerDto {
     @IsNotEmpty({message: "Customer's first name can't be empty"})
