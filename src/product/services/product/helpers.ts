@@ -1,7 +1,7 @@
 import { CreateProductDto } from "src/product/dto/create-product.dto";
 import { Product, ProductCategory } from "src/product/entities/product.entity";
 
-export function fakeFoodHelper(): CreateProductDto {
+export function fakeProductHelper(): CreateProductDto {
     const food = new Product();
     
     food.name = 'Latte';

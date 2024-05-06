@@ -7,9 +7,7 @@ import { Product } from 'src/product/entities/product.entity';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { UpdateProductDto } from 'src/product/dto/update-product.dto';
 
-const mockFoodService = {};
-
-describe('FoodController', () => {
+describe('ProductController', () => {
   let controller: FoodController;
   let service: DeepMocked<ProductService>;
 

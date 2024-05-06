@@ -1,4 +1,4 @@
-import { IsLowercase, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { ProductCategory } from "../entities/product.entity";
 import { IsNotBlank } from "./custom_validators/isNotBlank";
 

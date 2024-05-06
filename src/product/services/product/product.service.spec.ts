@@ -1,14 +1,13 @@
-import { Test } from '@nestjs/testing';
-import { ProductService } from './product.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMock } from '@golevelup/ts-jest';
+import { Test } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UpdateProductDto } from 'src/product/dto/update-product.dto';
 import { Product } from 'src/product/entities/product.entity';
 import { Repository } from 'typeorm';
-import { CreateProductDto } from 'src/product/dto/create-product.dto';
-import { UpdateProductDto } from 'src/product/dto/update-product.dto';
-import { fakeFoodHelper } from './helpers';
+import { fakeProductHelper } from './helpers';
+import { ProductService } from './product.service';
 
-describe('FoodService', () => {
+describe('ProductService', () => {
   let service: ProductService;
   let repositoryMock = createMock<Repository<Product>>();
 
@@ -40,7 +39,7 @@ describe('FoodService', () => {
     });
 
     it('should call create from repository once', async () => {
-      const food = fakeFoodHelper();
+      const food = fakeProductHelper();
 
       repositoryMock.create.mockReturnValueOnce(new Product());
       
@@ -51,7 +50,7 @@ describe('FoodService', () => {
     });
 
     it('should return Food object', async () => {
-      const food = fakeFoodHelper();
+      const food = fakeProductHelper();
 
       repositoryMock.save.mockResolvedValueOnce(new Product());
 
