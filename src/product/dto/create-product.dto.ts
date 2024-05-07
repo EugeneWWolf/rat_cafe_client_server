@@ -14,7 +14,7 @@ export class CreateProductDto {
     type: ProductCategory;
 
     @IsNotEmpty({message: "Product price can't be empty"})
-    @IsNumberString({}, {message: "Product price must be a numeric string"})
+    @IsNumberString({no_symbols: true}, {message: "Product price must be a numeric string"})
     price: number;
 
     @IsOptional()
