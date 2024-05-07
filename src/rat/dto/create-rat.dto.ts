@@ -10,5 +10,5 @@ export class CreateRatDto {
     @IsOptional()
     @IsNotEmpty({message: "Rat description can't be empty"})
     @IsNotBlank('Check whether rat description contains only whitespaces', {message: "Rat description mustn't be blank (add at least 1 non-whitespace character)"})
-    description: string;
+    description?: string;
 }
