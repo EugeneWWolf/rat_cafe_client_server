@@ -9,9 +9,9 @@ export class FoodController {
     constructor(private readonly foodService: ProductService) {}
 
     @Post()
-    async create(@Body() createFoodDto: CreateProductDto): Promise<Product> {
+    async create(@Body() createProductDto: CreateProductDto): Promise<Product> {
         try {
-            return await this.foodService.create(createFoodDto);
+            return await this.foodService.create(createProductDto);
         } catch (err) {
             throw new InternalServerErrorException({message: err.message});
         }
@@ -36,11 +36,15 @@ export class FoodController {
     }
 
     @Patch(':id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body() updateFoodDto: UpdateProductDto): Promise<void> {
+    async update(@Param('id', ParseIntPipe) id: number, @Body() updateProductDto: UpdateProductDto): Promise<void> {
         try {
-            await this.foodService.update(id, updateFoodDto);
+            await this.foodService.update(id, updateProductDto);
         } catch(err) {
-            throw new NotFoundException({message: err.message});
+            if (err instanceof NotFoundError) {
+                throw new NotFoundException({message: err.message});
+            } else {
+                throw new InternalServerErrorException({message: err.message});
+            }
         }
     }
 
@@ -49,7 +53,11 @@ export class FoodController {
         try {
             return await this.foodService.remove(id);
         } catch(err) {
-            throw new NotFoundException({message: err.message});
+            if (err instanceof NotFoundError) {
+                throw new NotFoundException({message: err.message});
+            } else {
+                throw new InternalServerErrorException({message: err.message});
+            }
         }
     }
 }
