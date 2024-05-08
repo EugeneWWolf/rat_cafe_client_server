@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from 'src/modules/product/dto/create-product.dto';
 import { UpdateProductDto } from 'src/modules/product/dto/update-product.dto';
 import { Product } from 'src/modules/product/entities/product.entity';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
@@ -18,7 +18,11 @@ export class ProductService {
 
             return await this.foodRepository.save(food);
         } catch(err) {
-            throw err;
+            if (err instanceof QueryFailedError) {
+                throw new Error('Price must be larger than or equal to 100 rubles');
+            } else {
+                throw err;
+            }
         }
     }
 
@@ -37,8 +41,7 @@ export class ProductService {
     }
 
     async update(id: number, updateProductDto: UpdateProductDto): Promise<void> {
-        const food = await this.foodRepository.findOneBy({ id })
-            .catch(error => {throw error});
+        const food = await this.foodRepository.findOneBy({ id });
     
         if (!food) {
             throw new NotFoundError(`Couldn't update data: no item with such id (${id})`);
@@ -47,7 +50,11 @@ export class ProductService {
         try {
             await this.foodRepository.update(id, updateProductDto);
         } catch(err) {
-            throw err;
+            if (err instanceof QueryFailedError) {
+                throw new Error('Price must be larger than or equal to 100 rubles');
+            } else {
+                throw err;
+            }
         }
     }
 
@@ -61,7 +68,7 @@ export class ProductService {
         try {
             return await this.foodRepository.remove(food);
         } catch(err) {
-            throw err;
+            throw new Error('Unable to remove entity (item with this id exists, but something went wrong)');
         }
     }
 }
