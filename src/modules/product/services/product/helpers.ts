@@ -1,5 +1,5 @@
-import { CreateProductDto } from "src/product/dto/create-product.dto";
-import { Product, ProductCategory } from "src/product/entities/product.entity";
+import { CreateProductDto } from "src/modules/product/dto/create-product.dto";
+import { Product, ProductCategory } from "src/modules/product/entities/product.entity";
 
 export function fakeProductHelper(): CreateProductDto {
     const food = new Product();

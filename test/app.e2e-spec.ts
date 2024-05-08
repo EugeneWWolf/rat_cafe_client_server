@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ProductModule } from 'src/product/product.module';
-import { Product, ProductCategory } from 'src/product/entities/product.entity';
+import { ProductModule } from 'src/modules/product/product.module';
+import { Product, ProductCategory } from 'src/modules/product/entities/product.entity';
 import { Repository } from 'typeorm';
-import { ProductService } from 'src/product/services/product/product.service';
+import { ProductService } from 'src/modules/product/services/product/product.service';
 import { createProductDTO } from './helpers';
 import { TypeOrmModule } from '@nestjs/typeorm';
 

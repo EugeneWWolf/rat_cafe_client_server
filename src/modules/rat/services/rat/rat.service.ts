@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateRatDto } from 'src/rat/dto/create-rat.dto';
-import { UpdateRatDto } from 'src/rat/dto/update-rat.dto';
-import { Rat } from 'src/rat/entities/rat.entity';
+import { CreateRatDto } from 'src/modules/rat/dto/create-rat.dto';
+import { UpdateRatDto } from 'src/modules/rat/dto/update-rat.dto';
+import { Rat } from 'src/modules/rat/entities/rat.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FoodController } from './product.controller';
-import { ProductService } from 'src/product/services/product/product.service';
+import { ProductService } from 'src/modules/product/services/product/product.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { CreateProductDto } from 'src/product/dto/create-product.dto';
-import { Product } from 'src/product/entities/product.entity';
+import { CreateProductDto } from 'src/modules/product/dto/create-product.dto';
+import { Product } from 'src/modules/product/entities/product.entity';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { UpdateProductDto } from 'src/product/dto/update-product.dto';
+import { UpdateProductDto } from 'src/modules/product/dto/update-product.dto';
 
 describe('ProductController', () => {
   let controller: FoodController;

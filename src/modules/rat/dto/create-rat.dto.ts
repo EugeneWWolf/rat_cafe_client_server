@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { IsNotBlank } from "src/class_validator/custom_validators/isNotBlank";
+import { IsNotBlank } from "src/utility/class_validator/custom_validators/isNotBlank";
 
 export class CreateRatDto {
     @IsNotEmpty({message: "Rat name can't be empty"})

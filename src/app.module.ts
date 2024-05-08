@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Product } from './product/entities/product.entity';
-import { ProductModule } from './product/product.module';
-import { Rat } from './rat/entities/rat.entity';
-import { RatModule } from './rat/rat.module';
-import { Customer } from './customer/entities/customer.entity';
-import { CustomerModule } from './customer/customer.module';
-import { AdditionalServiceModule } from './additional_service/additional_service.module';
-import { AdditionalService } from './additional_service/entities/additional_service.entity';
+import { Product } from './modules/product/entities/product.entity';
+import { ProductModule } from './modules/product/product.module';
+import { Rat } from './modules/rat/entities/rat.entity';
+import { RatModule } from './modules/rat/rat.module';
+import { Waiter } from './modules/waiter/entities/waiter.entity';
+import { WaiterModule } from './modules/waiter/waiter.module';
 
 @Module({
   imports: [
@@ -18,13 +16,12 @@ import { AdditionalService } from './additional_service/entities/additional_serv
       username: 'postgres',
       password: '1488',
       database: 'rat_cafe',
-      entities: [Product, Rat, Customer, AdditionalService],
+      entities: [Product, Rat, Waiter],
       synchronize: true,
   }),
   ProductModule,
   RatModule,
-  CustomerModule,
-  AdditionalServiceModule
+  WaiterModule
 ],
   controllers: [],
   providers: [],

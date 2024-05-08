@@ -1,44 +1,44 @@
 import { Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
-import { CreateProductDto } from 'src/product/dto/create-product.dto';
-import { UpdateProductDto } from 'src/product/dto/update-product.dto';
-import { Product } from 'src/product/entities/product.entity';
-import { ProductService } from 'src/product/services/product/product.service';
+import { CreateRatDto } from 'src/modules/rat/dto/create-rat.dto';
+import { UpdateRatDto } from 'src/modules/rat/dto/update-rat.dto';
+import { Rat } from 'src/modules/rat/entities/rat.entity';
+import { RatService } from 'src/modules/rat/services/rat/rat.service';
 
-@Controller('product')
-export class FoodController {
-    constructor(private readonly foodService: ProductService) {}
+@Controller('rat')
+export class RatController {
+    constructor(private readonly ratService: RatService) {}
 
     @Post()
-    async create(@Body() createProductDto: CreateProductDto): Promise<Product> {
+    async create(@Body() createRatDto: CreateRatDto): Promise<Rat> {
         try {
-            return await this.foodService.create(createProductDto);
+            return await this.ratService.create(createRatDto);
         } catch (err) {
             throw new InternalServerErrorException({message: err.message});
         }
     }
 
     @Get()
-    async findAll(): Promise<Product[]> {
+    async findAll(): Promise<Rat[]> {
         try {
-            return await this.foodService.findAll();
+            return await this.ratService.findAll();
         } catch(err) {
             throw new InternalServerErrorException({message: err.message});
         }
     }
 
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number): Promise<Product> {
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<Rat> {
         try {
-            return await this.foodService.findOne(id);
+            return await this.ratService.findOne(id);
         } catch(err) {
             throw new NotFoundException({message: err.message});
         }
     }
 
     @Patch(':id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body() updateProductDto: UpdateProductDto): Promise<void> {
+    async update(@Param('id', ParseIntPipe) id: number, @Body() updateRatDto: UpdateRatDto): Promise<void> {
         try {
-            await this.foodService.update(id, updateProductDto);
+            await this.ratService.update(id, updateRatDto);
         } catch(err) {
             if (err instanceof NotFoundError) {
                 throw new NotFoundException({message: err.message});
@@ -49,9 +49,9 @@ export class FoodController {
     }
 
     @Delete(':id')
-    async remove(@Param('id', ParseIntPipe) id: number): Promise<Product> {
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<Rat> {
         try {
-            return await this.foodService.remove(id);
+            return await this.ratService.remove(id);
         } catch(err) {
             if (err instanceof NotFoundError) {
                 throw new NotFoundException({message: err.message});

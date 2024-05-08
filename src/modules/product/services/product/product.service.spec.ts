@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { UpdateProductDto } from 'src/product/dto/update-product.dto';
-import { Product } from 'src/product/entities/product.entity';
+import { UpdateProductDto } from 'src/modules/product/dto/update-product.dto';
+import { Product } from 'src/modules/product/entities/product.entity';
 import { Repository } from 'typeorm';
 import { fakeProductHelper } from './helpers';
 import { ProductService } from './product.service';
