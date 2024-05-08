@@ -27,7 +27,8 @@ export class ProductService {
     }
 
     async findAll(): Promise<Product[]> {
-        const food = await this.foodRepository.find();
+        const food = await this.foodRepository.find()
+            .catch(() => {throw new Error('Internal error in database')});
 
         if (!food) {
             throw new NotFoundError("Couldn't find data: database is empty");
@@ -41,7 +42,8 @@ export class ProductService {
     }
 
     async update(id: number, updateProductDto: UpdateProductDto): Promise<void> {
-        const food = await this.foodRepository.findOneBy({ id });
+        const food = await this.foodRepository.findOneBy({ id })
+            .catch(() => {throw new Error('Internal error in database')});
     
         if (!food) {
             throw new NotFoundError(`Couldn't update data: no item with such id (${id})`);
@@ -59,7 +61,8 @@ export class ProductService {
     }
 
     async remove(id: number): Promise<Product> {
-        const food = await this.foodRepository.findOneBy({ id });
+        const food = await this.foodRepository.findOneBy({ id })
+            .catch(() => {throw new Error('Internal error in database')});;
     
         if (!food) {
             throw new NotFoundError(`Couldn't remove data: no item with such id (${id})`);
