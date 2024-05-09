@@ -8,7 +8,7 @@ export enum ProductCategory {
 }
 
 @Entity()
-@Check('"price" >= 100')
+@Check('Price must be higher than or equal to 100 rubles', '"price" >= 100')
 export class Product {
 
     @BeforeInsert()

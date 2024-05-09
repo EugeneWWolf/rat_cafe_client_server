@@ -4,6 +4,7 @@ import { CreateProductDto } from 'src/modules/product/dto/create-product.dto';
 import { UpdateProductDto } from 'src/modules/product/dto/update-product.dto';
 import { Product } from 'src/modules/product/entities/product.entity';
 import { QueryFailedError, Repository } from 'typeorm';
+import { NotFoundError } from 'src/utility/error_handling/database-errors';
 
 @Injectable()
 export class ProductService {
@@ -28,7 +29,9 @@ export class ProductService {
 
     async findAll(): Promise<Product[]> {
         const food = await this.foodRepository.find()
-            .catch(() => {throw new Error('Internal error in database')});
+            .catch((err) => {
+                throw err;
+            });
 
         if (!food) {
             throw new NotFoundError("Couldn't find data: database is empty");
@@ -38,12 +41,23 @@ export class ProductService {
     }
 
     async findOne(id: number): Promise<Product> {
-        return await this.foodRepository.findOneByOrFail({ id });
+        const food = await this.foodRepository.findOneBy({ id })
+            .catch((err) => {
+                throw err;
+            });
+        
+        if (!food) {
+            throw new NotFoundError(`Couldn't find data: no item with such id (${id})`); 
+        }
+
+        return await food;
     }
 
     async update(id: number, updateProductDto: UpdateProductDto): Promise<void> {
         const food = await this.foodRepository.findOneBy({ id })
-            .catch(() => {throw new Error('Internal error in database')});
+            .catch((err) => {
+                throw err;
+            });
     
         if (!food) {
             throw new NotFoundError(`Couldn't update data: no item with such id (${id})`);
@@ -62,7 +76,9 @@ export class ProductService {
 
     async remove(id: number): Promise<Product> {
         const food = await this.foodRepository.findOneBy({ id })
-            .catch(() => {throw new Error('Internal error in database')});;
+            .catch((err) => {
+                throw err;
+            });
     
         if (!food) {
             throw new NotFoundError(`Couldn't remove data: no item with such id (${id})`);
