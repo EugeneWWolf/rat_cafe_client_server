@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateWaiterDto } from '../../dto/create-waiter.dto';
 import { UpdateWaiterDto } from '../../dto/update-waiter.dto';
+import { NotFoundError } from 'src/utility/error_handling/database-errors';
 
 @Injectable()
 export class WaiterService {

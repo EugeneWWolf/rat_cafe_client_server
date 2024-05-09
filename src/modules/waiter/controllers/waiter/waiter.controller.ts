@@ -3,6 +3,7 @@ import { CreateWaiterDto } from '../../dto/create-waiter.dto';
 import { UpdateWaiterDto } from '../../dto/update-waiter.dto';
 import { Waiter } from '../../entities/waiter.entity';
 import { WaiterService } from '../../services/waiter/waiter.service';
+import { NotFoundError } from 'src/utility/error_handling/database-errors';
 
 @Controller('waiter')
 export class WaiterController {

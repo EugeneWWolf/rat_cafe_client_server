@@ -4,6 +4,7 @@ import { CreateRatDto } from 'src/modules/rat/dto/create-rat.dto';
 import { UpdateRatDto } from 'src/modules/rat/dto/update-rat.dto';
 import { Rat } from 'src/modules/rat/entities/rat.entity';
 import { Repository } from 'typeorm';
+import { NotFoundError } from 'src/utility/error_handling/database-errors';
 
 @Injectable()
 export class RatService {
