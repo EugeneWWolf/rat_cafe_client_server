@@ -1,0 +1,46 @@
+import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from "@nestjs/common";
+import { EntityNotFoundError, QueryFailedError } from "typeorm";
+
+@Catch(QueryFailedError, EntityNotFoundError)
+export class DatabaseExceptionFilter implements ExceptionFilter {
+    catch(exception: QueryFailedError | EntityNotFoundError, host: ArgumentsHost) {
+        const ctx = host.switchToHttp();
+        const response = ctx.getResponse();
+    
+        const exceptionMessage = exception.message;
+
+        if (exception instanceof QueryFailedError) {
+            if (exceptionMessage.includes('duplicate key value violates unique constraint')) {
+                response.status(HttpStatus.CONFLICT).json({
+                    statusCode: HttpStatus.CONFLICT,
+                    message: `Duplicate entry`,
+                });
+            } else {
+                response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                    message: `Something went wrong: ${exceptionMessage}`,
+                });
+            }
+        }
+
+        if (exception instanceof EntityNotFoundError) {
+            const matchID = exceptionMessage.match(/"id": (\d+)/);
+            const matchEntity = exceptionMessage.match(/of type "(.*?)"/);
+
+            let entityID: string;
+            let entityName: string;
+
+            if (matchID && matchEntity) {
+                entityID = matchID[1];
+                entityName = matchEntity[1];
+            }
+
+            if (entityID && entityName) {
+                response.status(HttpStatus.NOT_FOUND).json({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: `Can't find item with ID ${entityID} from ${entityName}`,
+                });
+            }
+        }
+    }
+}

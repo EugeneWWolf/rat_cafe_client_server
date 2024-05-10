@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from 'src/modules/product/dto/create-product.dto';
 import { UpdateProductDto } from 'src/modules/product/dto/update-product.dto';
 import { Product } from 'src/modules/product/entities/product.entity';
-import { QueryFailedError, Repository } from 'typeorm';
-import { NotFoundError } from 'src/utility/error_handling/database-errors';
+import { EntityNotFoundError, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
@@ -19,75 +18,60 @@ export class ProductService {
 
             return await this.foodRepository.save(food);
         } catch(err) {
-            if (err instanceof QueryFailedError) {
-                throw new Error('Price must be larger than or equal to 100 rubles');
-            } else {
-                throw err;
-            }
+            Logger.error(`Error in create(): ${err.message}`);
+            throw err;
         }
     }
 
     async findAll(): Promise<Product[]> {
-        const food = await this.foodRepository.find()
-            .catch((err) => {
-                throw err;
-            });
-
-        if (!food) {
-            throw new NotFoundError("Couldn't find data: database is empty");
+        try {
+            return await this.foodRepository.find();
+        } catch(err) {
+            Logger.error(`Error in findAll(): ${err.message}`);
+            throw err;
         }
-
-        return await food;
     }
 
     async findOne(id: number): Promise<Product> {
-        const food = await this.foodRepository.findOneBy({ id })
-            .catch((err) => {
-                throw err;
-            });
-        
-        if (!food) {
-            throw new NotFoundError(`Couldn't find data: no item with such id (${id})`); 
+        try {
+            return await this.foodRepository.findOneByOrFail({ id });
+        } catch(err) {
+            Logger.error(`Error in findOne(): ${err.message}`);
+            throw err;
         }
-
-        return await food;
     }
 
     async update(id: number, updateProductDto: UpdateProductDto): Promise<void> {
-        const food = await this.foodRepository.findOneBy({ id })
-            .catch((err) => {
-                throw err;
-            });
-    
-        if (!food) {
-            throw new NotFoundError(`Couldn't update data: no item with such id (${id})`);
+        try {
+            await this.foodRepository.findOneByOrFail({ id })
+        } catch(err) {
+            Logger.error(`Error in update(): ${err.message}`);
+            throw err;
         }
 
         try {
             await this.foodRepository.update(id, updateProductDto);
         } catch(err) {
-            if (err instanceof QueryFailedError) {
-                throw new Error('Price must be larger than or equal to 100 rubles');
-            } else {
-                throw err;
-            }
+            Logger.error(`Error in update(): ${err.message}`);
+            throw err;
         }
     }
 
     async remove(id: number): Promise<Product> {
-        const food = await this.foodRepository.findOneBy({ id })
-            .catch((err) => {
-                throw err;
-            });
-    
-        if (!food) {
-            throw new NotFoundError(`Couldn't remove data: no item with such id (${id})`);
+        let product: Product;
+
+        try {
+            product = await this.foodRepository.findOneByOrFail({ id })
+        } catch(err) {
+            Logger.error(`Error in remove(): ${err.message}`);
+            throw err;
         }
 
         try {
-            return await this.foodRepository.remove(food);
+            return await this.foodRepository.remove(product);
         } catch(err) {
-            throw new Error('Unable to remove entity (item with this id exists, but something went wrong)');
+            Logger.error(`Error in remove(): ${err.message}`);
+            throw err;
         }
     }
 }

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumberString, IsOptional, IsString, Min } from "class-validator";
 import { ProductCategory } from "../entities/product.entity";
 import { IsNotBlank } from "src/utility/class_validator/custom_validators/isNotBlank";
 
@@ -14,7 +14,8 @@ export class CreateProductDto {
     type: ProductCategory;
 
     @IsNotEmpty({message: "Product price can't be empty"})
-    @IsNumberString({no_symbols: true}, {message: "Product price must be a numeric string"})
+    @IsInt({message: "Product price must be an integer"})
+    @Min(1, {message: "Product price must be larger than 0"})
     price: number;
 
     @IsOptional()

@@ -8,7 +8,7 @@ export enum ProductCategory {
 }
 
 @Entity()
-@Check('Price must be higher than or equal to 100 rubles', '"price" >= 100')
+@Check('Product price must be higher than 0 rubles', '"price" > 0')
 export class Product {
 
     @BeforeInsert()
@@ -19,7 +19,7 @@ export class Product {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({unique: true})
     name: string;
 
     @Column({
