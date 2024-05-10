@@ -18,7 +18,7 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
             } else {
                 response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                     statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-                    message: `Something went wrong: ${exceptionMessage}`,
+                    message: `Internal database error`,
                 });
             }
         }
