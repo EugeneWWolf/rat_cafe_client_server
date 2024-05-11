@@ -1,6 +1,6 @@
-import { IsInt, IsNotEmpty, IsNumberString, IsOptional, IsString, Min } from "class-validator";
-import { ProductCategory } from "../entities/product.entity";
+import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from "class-validator";
 import { IsNotBlank } from "src/utility/class_validator/custom_validators/isNotBlank";
+import { ProductCategory } from "../entities/product.entity";
 
 export class CreateProductDto {
     @IsNotEmpty({message: "Product name can't be empty"})
