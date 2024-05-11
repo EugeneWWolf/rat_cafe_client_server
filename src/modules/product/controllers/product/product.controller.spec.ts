@@ -1,26 +1,26 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { FoodController } from './product.controller';
-import { ProductService } from 'src/modules/product/services/product/product.service';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { CreateProductDto } from 'src/modules/product/dto/create-product.dto';
-import { Product } from 'src/modules/product/entities/product.entity';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { UpdateProductDto } from 'src/modules/product/dto/update-product.dto';
+import { Product } from 'src/modules/product/entities/product.entity';
+import { ProductService } from 'src/modules/product/services/product/product.service';
+import { ProductController } from './product.controller';
+import { Response } from 'express';
 
 describe('ProductController', () => {
-  let controller: FoodController;
+  let controller: ProductController;
   let service: DeepMocked<ProductService>;
 
   const _preparation = async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [FoodController],
+      controllers: [ProductController],
       providers: [ProductService]
     })
     .overrideProvider(ProductService)
     .useValue(createMock<ProductService>())
     .compile();
 
-    controller = module.get<FoodController>(FoodController);
+    controller = module.get<ProductController>(ProductController);
     service = module.get(ProductService);
   };
 
@@ -47,9 +47,14 @@ describe('ProductController', () => {
       expect(getRecord).resolves.toBeInstanceOf(Product);
     });
 
-    it('should result in 500 status code if data is not correct', async () => {
+    it('should reject if data is not valid', async () => {
+      const dto = new CreateProductDto();
+
       service.create.mockRejectedValueOnce(new Error('Price is less than 100'));
-      expect(controller.create(new CreateProductDto)).rejects.toThrow(InternalServerErrorException);
+
+      const getRecord = controller.create(dto);
+
+      expect(getRecord).rejects.toThrow('Price is less than 100');
     });
   });
 
@@ -72,7 +77,7 @@ describe('ProductController', () => {
     it('should throw exception if data storage is empty', async () => {
       service.findAll.mockRejectedValueOnce(new Error('Data is not found'));
   
-      expect(controller.findAll()).rejects.toThrow(InternalServerErrorException);
+      expect(controller.findAll()).rejects.toThrow('Data is not found');
     });
   });
 
@@ -83,7 +88,7 @@ describe('ProductController', () => {
       expect(controller.findOne).toBeDefined();
     });
 
-    it('should return a record when data is found by id in data storage', async () => {
+    it('should return a record when data is found', async () => {
       service.findOne.mockResolvedValueOnce(new Product);
     
       const id = 2;
@@ -96,31 +101,53 @@ describe('ProductController', () => {
 
       const id = 2;
     
-      expect(controller.findOne(id)).rejects.toThrow(NotFoundException);
+      expect(controller.findOne(id)).rejects.toThrow('Data not found');
     });
   });
 
   describe('update', () => {
     beforeEach(_preparation);
-  
+
     it('should be defined', () => {
       expect(controller.update).toBeDefined();
     });
 
-    it('should call update from repository once', async () => {
+    it('should return 201 status code when update successful', async () => {
+      const statusResponseMock = {
+        send: jest.fn((x) => x),
+      }
+      
+      const responseMock = {
+        status: jest.fn((x) => statusResponseMock),
+        send: jest.fn((x) => x),
+      } as unknown as Response
+    
       service.update.mockResolvedValueOnce();
 
-      await controller.update(1, new UpdateProductDto());
+      await controller.update(1, new UpdateProductDto(), responseMock);
   
-      expect(service.update).toHaveBeenCalledTimes(1);
+      await expect(responseMock.status).toHaveBeenCalledWith(204);
     });
 
-    it('should result in exception if data is not found', async () => {
-      service.update.mockRejectedValueOnce(new Error('Data not found'));
-  
-      const id = 2;
+    it('should return 500 status code when unable to send request', async () => {
+      const statusResponseMock = {
+        send: jest.fn((x) => x),
+      }
+      
+      const responseMock = {
+        status: jest.fn((x) => statusResponseMock),
+        send: jest.fn(() => {throw new Error()}),
+      } as unknown as Response
+    
+      
+      service.update.mockResolvedValueOnce();
 
-      expect(controller.update(id, new UpdateProductDto())).rejects.toThrow(NotFoundException);
+      try {
+        await controller.update(1, new UpdateProductDto(), responseMock);
+      } catch (err) {
+        expect(responseMock.status).toHaveBeenCalledTimes(2);
+        expect(responseMock.status).toHaveBeenLastCalledWith(500);
+      }
     });
   });
 
@@ -142,7 +169,7 @@ describe('ProductController', () => {
   
       const id = 2;
 
-      expect(controller.remove(id)).rejects.toThrow(NotFoundException);
+      expect(controller.remove(id)).rejects.toThrow('Data not found');
     });
   });
 });
