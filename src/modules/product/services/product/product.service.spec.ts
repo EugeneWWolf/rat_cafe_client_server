@@ -4,8 +4,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UpdateProductDto } from 'src/modules/product/dto/update-product.dto';
 import { Product } from 'src/modules/product/entities/product.entity';
 import { Repository } from 'typeorm';
-import { fakeProductHelper } from './helpers';
 import { ProductService } from './product.service';
+import { CreateProductDto } from '../../dto/create-product.dto';
 
 describe('ProductService', () => {
   let service: ProductService;
@@ -39,7 +39,7 @@ describe('ProductService', () => {
     });
 
     it('should call create from repository once', async () => {
-      const food = fakeProductHelper();
+      const food = new CreateProductDto();
 
       repositoryMock.create.mockReturnValueOnce(new Product());
       
@@ -49,12 +49,20 @@ describe('ProductService', () => {
       expect(repositoryMock.create).toHaveBeenCalledTimes(1);
     });
 
-    it('should return Food object', async () => {
-      const food = fakeProductHelper();
+    it('should result in Product if theres no errors', async () => {
+      const food = new CreateProductDto();
 
       repositoryMock.save.mockResolvedValueOnce(new Product());
 
-      expect(service.create(food)).resolves.toBeInstanceOf(Product);
+      await expect(service.create(food)).resolves.toBeInstanceOf(Product);
+    });
+
+    it('should result in error if repository fails', async () => {
+      const food = new CreateProductDto();
+
+      repositoryMock.save.mockRejectedValueOnce(new Error('Some error occured'));
+
+      await expect(service.create(food)).rejects.toThrow('Some error occured');
     });
   });
 
@@ -65,10 +73,10 @@ describe('ProductService', () => {
       expect(service.findAll).toBeDefined();
     });
 
-    it('should result in error if data storage is empty', async () => {
-      repositoryMock.find.mockResolvedValueOnce(null as Array<Product>);
+    it('should result in empty array if data storage is empty', async () => {
+      repositoryMock.find.mockResolvedValueOnce([]);
       
-      expect(service.findAll()).rejects.toThrow("Couldn't find data: database is empty");
+      await expect(service.findAll()).resolves.toEqual([]);
     });
 
     it('should return data when data storage is not empty', async () => {
@@ -76,7 +84,13 @@ describe('ProductService', () => {
 
       repositoryMock.find.mockResolvedValueOnce(data);
 
-      expect(service.findAll()).resolves.toStrictEqual(data);
+      await expect(service.findAll()).resolves.toStrictEqual(data);
+    });
+
+    it('should resolve in error if repository fails', async () => {
+      repositoryMock.find.mockRejectedValueOnce(new Error('Some error occured'));
+
+      await expect(service.findAll()).rejects.toThrow('Some error occured');
     });
   });
 
@@ -90,13 +104,13 @@ describe('ProductService', () => {
     it('should reject promise if data not found', async () => {
       repositoryMock.findOneByOrFail.mockRejectedValueOnce(new Error('Data not found'));
 
-      expect(service.findOne(2)).rejects.toThrow('Data not found');
+      await expect(service.findOne(2)).rejects.toThrow('Data not found');
     });
 
     it('should return data if found', async () => {
       repositoryMock.findOneByOrFail.mockResolvedValueOnce(new Product);
 
-      expect(service.findOne(2)).resolves.toBeInstanceOf(Product);
+      await expect(service.findOne(2)).resolves.toBeInstanceOf(Product);
     });
   });
 
@@ -108,17 +122,26 @@ describe('ProductService', () => {
     });
 
     it('should result in error if data not found', async () => {
-      repositoryMock.findOneBy.mockResolvedValueOnce(null as Product);
+      repositoryMock.findOneByOrFail.mockRejectedValueOnce(new Error('Data not found'));
 
       const id = 2;
 
-      expect(service.update(id, new UpdateProductDto())).rejects.toThrow(`Couldn't update data: no item with such id (${id})`);
+      await expect(service.update(id, new UpdateProductDto())).rejects.toThrow('Data not found');
     });
 
     it('should call update from repository once if data is found', async () => {
+      repositoryMock.findOneByOrFail.mockResolvedValueOnce(new Product());
+
       await service.update(2, new UpdateProductDto());
 
       expect(repositoryMock.update).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reject if there was an error during data update', async () => {
+      repositoryMock.findOneByOrFail.mockResolvedValueOnce(new Product());
+      repositoryMock.update.mockRejectedValueOnce(new Error('Some error occured'));
+
+      await expect(service.update(2, new UpdateProductDto())).rejects.toThrow('Some error occured');
     });
   });
 
@@ -130,17 +153,27 @@ describe('ProductService', () => {
     });
 
     it('should result in error if data not found', async () => {
-      repositoryMock.findOneBy.mockResolvedValueOnce(null as Product);
+      repositoryMock.findOneByOrFail.mockRejectedValueOnce(new Error('Some error occured'));
 
       const id = 2;
 
-      expect(service.remove(id)).rejects.toThrow(`Couldn't remove data: no item with such id (${id})`);
+      await expect(service.remove(id)).rejects.toThrow('Some error occured');
     });
 
     it('should return deleted item if found', async () => {
       repositoryMock.remove.mockResolvedValueOnce(new Product());
 
-      expect(service.remove(2)).resolves.toBeInstanceOf(Product);
+      const id = 2;
+
+      await expect(service.remove(id)).resolves.toBeInstanceOf(Product);
+    });
+
+    it('should reject if error while deleting', async () => {
+      repositoryMock.remove.mockRejectedValueOnce(new Error('Some error occured'));
+
+      const id = 2;
+
+      await expect(service.remove(id)).rejects.toThrow('Some error occured');
     });
   });
 });
