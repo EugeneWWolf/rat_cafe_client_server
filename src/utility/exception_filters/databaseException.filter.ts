@@ -24,14 +24,18 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
         }
 
         if (exception instanceof EntityNotFoundError) {
-            const matchID = exceptionMessage.match(/"id": (\d+)/);
+            let matchID = exceptionMessage.match(/"id": (\d+)/);
+            if (!matchID) {
+                matchID = exceptionMessage.match(/"id":\s*\[\s*([\d\s,]+)\s*\]/);
+            }
+
             const matchEntity = exceptionMessage.match(/of type "(.*?)"/);
 
             let entityID: string;
             let entityName: string;
 
             if (matchID && matchEntity) {
-                entityID = matchID[1];
+                entityID = matchID[1].replace(/\s+/g, '');
                 entityName = matchEntity[1];
             }
 
