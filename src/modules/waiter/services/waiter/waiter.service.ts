@@ -25,13 +25,9 @@ export class WaiterService {
             if (ratIDs) {
                 const rats = await this.ratRepository.findBy({id: In(ratIDs)});
             
-                if (!Array.isArray(rats) || rats.length === 0) {
+                if (rats.length === 0) {
                     Logger.error(`Error in create(): rat with IDs ${ratIDs} weren't found`);
                     throw new EntityNotFoundError(Rat, { id: ratIDs });
-                }
-    
-                if (!waiter.rats) {
-                    waiter.rats = [];
                 }
 
                 waiter.rats.push(...rats);
@@ -90,20 +86,16 @@ export class WaiterService {
                 where: { id: id }
             })
 
-            const rats = await this.ratRepository.findBy({id: In(ratIDs)});
+            const ratsToBeAdded = await this.ratRepository.findBy({id: In(ratIDs)});
 
-            if (!Array.isArray(rats) || rats.length === 0) {
+            if (ratsToBeAdded.length === 0) {
                 Logger.error(`Error in addRatsToWaiter(): rat with IDs ${ratIDs} weren't found`);
                 throw new EntityNotFoundError(Rat, { id: ratIDs });
             }
 
-            if (waiter.rats === undefined) {
-                waiter.rats = [];
-            }
-
-            for (let i = 0; i < rats.length; i++) {
-                if (waiter.rats.indexOf(rats[i]) === -1) {
-                    waiter.rats.push(rats[i]);
+            for (let i = 0; i < ratsToBeAdded.length; i++) {
+                if (waiter.rats.indexOf(ratsToBeAdded[i]) === -1) {
+                    waiter.rats.push(ratsToBeAdded[i]);
                 }
             }
 
@@ -119,16 +111,12 @@ export class WaiterService {
                 relations: {
                     rats: true,
                 },
-                where: { id: id }
+                where: { id }
             })
 
             if (!waiter) {
-                throw new EntityNotFoundError(Waiter, { id: id }); 
+                throw new EntityNotFoundError(Waiter, { id }); 
             }
-
-            waiter.rats = [];
-
-            await this.waiterRepository.save(waiter);
 
             return await this.waiterRepository.remove(waiter);
         } catch(err) {
@@ -143,16 +131,16 @@ export class WaiterService {
                 relations: {
                     rats: true,
                 },
-                where: { id: id }
+                where: { id }
             })
 
             if (!waiter) {
-                throw new EntityNotFoundError(Waiter, { id: id }); 
+                throw new EntityNotFoundError(Waiter, { id }); 
             }
 
             const ratsToBeDeleted = await this.ratRepository.findBy({id: In(ratIDs)});
 
-            if (!Array.isArray(ratsToBeDeleted) || ratsToBeDeleted.length === 0) {
+            if (ratsToBeDeleted.length === 0) {
                 Logger.error(`Error in removeRatsFromWaiter(): rat with IDs ${ratIDs} weren't found`);
                 throw new EntityNotFoundError(Rat, { id: ratIDs });
             }
