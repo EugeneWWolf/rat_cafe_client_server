@@ -5,6 +5,7 @@ import { Response } from 'express';
 import { CreateRatDto } from "../../dto/create-rat.dto";
 import { Rat } from "../../entities/rat.entity";
 import { UpdateRatDto } from "../../dto/update-rat.dto";
+import { sendNoContentStatusCode } from "src/utility/controller_helpers/sendNoContentStatusCode";
 
 @Controller('rat')
 @UseFilters(DatabaseExceptionFilter)
@@ -30,12 +31,7 @@ export class RatController {
     async update(@Param('id', ParseIntPipe) id: number, @Body() updateRatDto: UpdateRatDto, @Res() res: Response): Promise<void> {
         await this.ratService.update(id, updateRatDto);
     
-        try {
-            res.status(HttpStatus.NO_CONTENT).send();
-        } catch(err) {
-            Logger.error(`Error in update(): ${err.message}`);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Internal Server Error: couldn't send response");
-        }
+        sendNoContentStatusCode(res, 'update');
     }
 
     @Delete(':id')

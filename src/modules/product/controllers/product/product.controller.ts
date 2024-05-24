@@ -4,6 +4,7 @@ import { CreateProductDto } from 'src/modules/product/dto/create-product.dto';
 import { UpdateProductDto } from 'src/modules/product/dto/update-product.dto';
 import { Product } from 'src/modules/product/entities/product.entity';
 import { ProductService } from 'src/modules/product/services/product/product.service';
+import { sendNoContentStatusCode } from 'src/utility/controller_helpers/sendNoContentStatusCode';
 import { DatabaseExceptionFilter } from 'src/utility/exception_filters/DatabaseException.filter';
 
 @Controller('product')
@@ -30,12 +31,7 @@ export class ProductController {
     async update(@Param('id', ParseIntPipe) id: number, @Body() updateProductDto: UpdateProductDto, @Res() res: Response): Promise<void> {
         await this.foodService.update(id, updateProductDto);
     
-        try {
-            res.status(HttpStatus.NO_CONTENT).send();
-        } catch(err) {
-            Logger.error(`Error in update(): ${err.message}`);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Internal Server Error: couldn't send response");
-        }
+        sendNoContentStatusCode(res, 'update');
     }
 
     @Delete(':id')
