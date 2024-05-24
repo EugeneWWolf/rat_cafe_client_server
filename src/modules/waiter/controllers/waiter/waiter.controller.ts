@@ -5,27 +5,18 @@ import { CreateWaiterDto } from '../../dto/create-waiter.dto';
 import { UpdateWaiterDto } from '../../dto/update-watier.dto';
 import { Waiter } from '../../entities/waiter.entity';
 import { WaiterService } from '../../services/waiter/waiter.service';
-import { CreateWaiterWithRatsDto } from '../../dto/create-waiter-with-rats.dto';
 import { ParseIntArrayPipe } from 'src/utility/custom_pipes/parseIntArrayPipe.pipe';
+import { sendNoContentStatusCode } from 'src/utility/controller_helpers/sendNoContentStatusCode';
 
 @Controller('waiter')
 @UseFilters(DatabaseExceptionFilter)
 export class WaiterController {
     constructor(private readonly waiterService: WaiterService) {}
-
-    @Post()
-    async create(@Body() createWaiterDto: CreateWaiterDto): Promise<Waiter> {
-        return await this.waiterService.create(createWaiterDto);
-    }
-
-    // Окей, создадим апишку, в котором я в теле указываю крысу и он создаёт вейтера с крысами указанными (айдишниками их)
-    // Но нужно пропарсить полученные айдишники и форматнуть их в нужный формат с помощью пайпа кастамного
-    // До этого я делал лишь так с поиском элементов по айди, но как тело преобразовать да ебаный рот... О, класс валидатор
     
-    @Post('/rats')
-    async createWaiterWithRats(@Body() createWaiterWithRatsDto: CreateWaiterWithRatsDto, @Body('ratIDs', ParseIntArrayPipe) ratIDs: number[]) {
-        createWaiterWithRatsDto.ratIDs = ratIDs;
-        return await this.waiterService.createWaiterWithRats(createWaiterWithRatsDto);
+    @Post()
+    async create(@Body() createWaiterDto: CreateWaiterDto, @Body('ratIDs', new ParseIntArrayPipe(true)) ratIDs: number[]): Promise<Waiter> {
+        createWaiterDto.ratIDs = ratIDs;
+        return await this.waiterService.create(createWaiterDto);
     }
 
     @Get()
@@ -33,21 +24,33 @@ export class WaiterController {
         return await this.waiterService.findAll();
     }
 
+    @Get('rats')
+    async findAllWaitersWithRats(): Promise<Waiter[]> {
+        return await this.waiterService.findAllWaitersWithRats();
+    }
+
     @Get(':id')
     async findOne(@Param('id', ParseIntPipe) id: number): Promise<Waiter> {
         return await this.waiterService.findOne(id);
+    }
+
+    @Patch(':id/rats')
+    async addRatsToWaiter(@Param('id', ParseIntPipe) id: number, @Body('ratIDs', new ParseIntArrayPipe(false)) ratIDs: number[], @Res() res: Response) {
+        await this.waiterService.addRatsToWaiter(id, ratIDs);
+
+        sendNoContentStatusCode(res, 'addRatsToWaiter');
     }
 
     @Patch(':id')
     async update(@Param('id', ParseIntPipe) id: number, @Body() updateWaiterDto: UpdateWaiterDto, @Res() res: Response): Promise<void> {
         await this.waiterService.update(id, updateWaiterDto);
     
-        try {
-            res.status(HttpStatus.NO_CONTENT).send();
-        } catch(err) {
-            Logger.error(`Error in update(): ${err.message}`);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Internal Server Error: couldn't send response");
-        }
+        sendNoContentStatusCode(res, 'update');
+    }
+
+    @Delete(':id/rats')
+    async deleteRatsFromWaiter(@Param('id', ParseIntPipe) id: number, @Body('ratIDs', new ParseIntArrayPipe(false)) ratIDs: number[]) {
+        return await this.waiterService.removeRatsFromWaiter(id, ratIDs);
     }
 
     @Delete(':id')
