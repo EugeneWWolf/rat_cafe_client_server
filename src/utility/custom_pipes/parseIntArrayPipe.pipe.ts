@@ -1,4 +1,4 @@
-import { Injectable, PipeTransform, BadRequestException, Logger } from "@nestjs/common";
+import { Injectable, PipeTransform, BadRequestException, Logger, ArgumentMetadata } from "@nestjs/common";
 
 @Injectable()
 export class ParseIntArrayPipe implements PipeTransform {
@@ -10,14 +10,14 @@ export class ParseIntArrayPipe implements PipeTransform {
     }
   }
 
-  transform(value: string): number[] {
+  transform(value: string, metadata: ArgumentMetadata): number[] {
     if (!value) {
       if (this.isOptional) {
         return undefined;
       }
 
       Logger.error(`Error in ParseIntArrayPipe`);
-      throw new BadRequestException('Validation failed (string with numbers divided by commas is expected)');
+      throw new BadRequestException(`Validation failed in ${metadata.data} parameter: string with numbers divided by commas is expected`);
     }
 
     const values = value.split(',').map(item => {
@@ -26,7 +26,7 @@ export class ParseIntArrayPipe implements PipeTransform {
 
     if (isNaN(values[values.length - 1])) {
       Logger.error(`Error in ParseIntArrayPipe`);
-      throw new BadRequestException('Validation failed (unable to get numeric array of indexes)');
+      throw new BadRequestException(`Validation failed in ${metadata.data} parameter: unable to get numeric array of indexes`);
     }
 
     return values;
