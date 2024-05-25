@@ -30,6 +30,10 @@ export class WaiterService {
                     throw new EntityNotFoundError(Rat, { id: ratIDs });
                 }
 
+                if (!waiter.rats) {
+                    waiter.rats = [];
+                }
+
                 waiter.rats.push(...rats);
             }
 
@@ -83,7 +87,7 @@ export class WaiterService {
                 relations: {
                     rats: true,
                 },
-                where: { id: id }
+                where: { id }
             })
 
             const ratsToBeAdded = await this.ratRepository.findBy({id: In(ratIDs)});
@@ -91,6 +95,10 @@ export class WaiterService {
             if (ratsToBeAdded.length === 0) {
                 Logger.error(`Error in addRatsToWaiter(): rat with IDs ${ratIDs} weren't found`);
                 throw new EntityNotFoundError(Rat, { id: ratIDs });
+            }
+
+            if (!waiter.rats) {
+                waiter.rats = [];
             }
 
             for (let i = 0; i < ratsToBeAdded.length; i++) {
