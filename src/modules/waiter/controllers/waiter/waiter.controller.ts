@@ -1,12 +1,12 @@
-import { Controller, UseFilters, Post, Body, Get, Param, ParseIntPipe, Patch, Res, HttpStatus, Logger, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Res, UseFilters } from '@nestjs/common';
 import { Response } from 'express';
+import { sendNoContentStatusCode } from 'src/utility/controller_helpers/sendNoContentStatusCode';
+import { ParseIntArrayPipe } from 'src/utility/custom_pipes/parseIntArrayPipe.pipe';
 import { DatabaseExceptionFilter } from 'src/utility/exception_filters/DatabaseException.filter';
 import { CreateWaiterDto } from '../../dto/create-waiter.dto';
 import { UpdateWaiterDto } from '../../dto/update-watier.dto';
 import { Waiter } from '../../entities/waiter.entity';
 import { WaiterService } from '../../services/waiter/waiter.service';
-import { ParseIntArrayPipe } from 'src/utility/custom_pipes/parseIntArrayPipe.pipe';
-import { sendNoContentStatusCode } from 'src/utility/controller_helpers/sendNoContentStatusCode';
 
 @Controller('waiter')
 @UseFilters(DatabaseExceptionFilter)

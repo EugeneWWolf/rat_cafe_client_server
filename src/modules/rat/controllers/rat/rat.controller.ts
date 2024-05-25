@@ -1,11 +1,11 @@
-import { Body, Post, Get, Patch, Delete, Controller, UseFilters, Param, ParseIntPipe, Res, HttpStatus, Logger } from "@nestjs/common";
-import { DatabaseExceptionFilter } from "src/utility/exception_filters/DatabaseException.filter";
-import { RatService } from "../../services/rat/rat.service";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Res, UseFilters } from "@nestjs/common";
 import { Response } from 'express';
-import { CreateRatDto } from "../../dto/create-rat.dto";
-import { Rat } from "../../entities/rat.entity";
-import { UpdateRatDto } from "../../dto/update-rat.dto";
 import { sendNoContentStatusCode } from "src/utility/controller_helpers/sendNoContentStatusCode";
+import { DatabaseExceptionFilter } from "src/utility/exception_filters/DatabaseException.filter";
+import { CreateRatDto } from "../../dto/create-rat.dto";
+import { UpdateRatDto } from "../../dto/update-rat.dto";
+import { Rat } from "../../entities/rat.entity";
+import { RatService } from "../../services/rat/rat.service";
 
 @Controller('rat')
 @UseFilters(DatabaseExceptionFilter)

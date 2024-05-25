@@ -1,5 +1,4 @@
-import { Transform } from "class-transformer";
-import { ArrayMinSize, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 import { IsNotBlank } from "src/utility/class_validator/custom_validators/isNotBlank";
 
 export class CreateWaiterDto {

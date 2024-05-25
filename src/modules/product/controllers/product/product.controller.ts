@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseIntPipe, Patch, Post, Res, UseFilters } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Res, UseFilters } from '@nestjs/common';
 import { Response } from 'express';
 import { CreateProductDto } from 'src/modules/product/dto/create-product.dto';
 import { UpdateProductDto } from 'src/modules/product/dto/update-product.dto';
