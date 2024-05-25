@@ -13,8 +13,5 @@ export class CreateWaiterDto {
     @IsNotBlank('Check whether waiter last name contains only whitespaces', {message: "Waiter last name mustn't be blank (add at least 1 non-whitespace character)"})
     last_name: string;
 
-    @IsOptional()
-    @IsArray()
-    @IsNumber({}, { each: true })
     ratIDs?: number[];
 }
