@@ -14,6 +14,7 @@ export class CreateWaiterDto {
     last_name: string;
 
     @IsOptional()
-    @IsNotEmpty()
+    @IsArray()
+    @IsNumber({}, { each: true })
     ratIDs?: number[];
 }
