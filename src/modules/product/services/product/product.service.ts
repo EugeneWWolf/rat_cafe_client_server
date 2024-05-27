@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
+    private readonly logger = new Logger(ProductService.name);
+
     constructor(
         @InjectRepository(Product)
         private readonly foodRepository: Repository<Product>,
@@ -18,7 +20,7 @@ export class ProductService {
 
             return await this.foodRepository.save(food);
         } catch(err) {
-            Logger.error(`Error in create(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
@@ -27,7 +29,7 @@ export class ProductService {
         try {
             return await this.foodRepository.find();
         } catch(err) {
-            Logger.error(`Error in findAll(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
@@ -36,41 +38,27 @@ export class ProductService {
         try {
             return await this.foodRepository.findOneByOrFail({ id });
         } catch(err) {
-            Logger.error(`Error in findOne(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
 
     async update(id: number, updateProductDto: UpdateProductDto): Promise<void> {
         try {
-            await this.foodRepository.findOneByOrFail({ id })
-        } catch(err) {
-            Logger.error(`Error in update(): ${err.message}`);
-            throw err;
-        }
-
-        try {
+            await this.foodRepository.findOneByOrFail({ id });
             await this.foodRepository.update(id, updateProductDto);
         } catch(err) {
-            Logger.error(`Error in update(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
 
     async remove(id: number): Promise<Product> {
-        let product: Product;
-
         try {
-            product = await this.foodRepository.findOneByOrFail({ id })
-        } catch(err) {
-            Logger.error(`Error in remove(): ${err.message}`);
-            throw err;
-        }
-
-        try {
+            const product = await this.foodRepository.findOneByOrFail({ id });
             return await this.foodRepository.remove(product);
         } catch(err) {
-            Logger.error(`Error in remove(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }

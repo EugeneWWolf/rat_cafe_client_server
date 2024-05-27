@@ -8,6 +8,8 @@ import { Rat } from "src/modules/rat/entities/rat.entity";
 
 @Injectable()
 export class WaiterService {
+    private readonly logger = new Logger(WaiterService.name);
+
     constructor(
         @InjectRepository(Waiter)
         private readonly waiterRepository: Repository<Waiter>,
@@ -26,7 +28,6 @@ export class WaiterService {
                 const rats = await this.ratRepository.findBy({id: In(ratIDs)});
             
                 if (rats.length === 0) {
-                    Logger.error(`Error in create(): rat with IDs ${ratIDs} weren't found`);
                     throw new EntityNotFoundError(Rat, { id: ratIDs });
                 }
 
@@ -39,7 +40,7 @@ export class WaiterService {
 
             return this.waiterRepository.save(waiter);
         } catch (error) {
-            Logger.error(`Error in create(): ${error}`);
+            this.logger.error(error.message);
             throw error;
         }
     }
@@ -48,7 +49,7 @@ export class WaiterService {
         try {
             return await this.waiterRepository.find();
         } catch(err) {
-            Logger.error(`Error in findAll(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
@@ -57,6 +58,7 @@ export class WaiterService {
         try {
             return await this.waiterRepository.find({relations: ['rats']});
         } catch (err) {
+            this.logger.error(err.message);
             throw err;
         }
     }
@@ -65,7 +67,7 @@ export class WaiterService {
         try {
             return await this.waiterRepository.findOneByOrFail({ id });
         } catch(err) {
-            Logger.error(`Error in findOne(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
@@ -76,7 +78,7 @@ export class WaiterService {
 
             await this.waiterRepository.update(id, updateWaiterDto);
         } catch(err) {
-            Logger.error(`Error in update(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
@@ -93,7 +95,6 @@ export class WaiterService {
             const ratsToBeAdded = await this.ratRepository.findBy({id: In(ratIDs)});
 
             if (ratsToBeAdded.length === 0) {
-                Logger.error(`Error in addRatsToWaiter(): rat with IDs ${ratIDs} weren't found`);
                 throw new EntityNotFoundError(Rat, { id: ratIDs });
             }
 
@@ -109,6 +110,7 @@ export class WaiterService {
 
             return await this.waiterRepository.save(waiter);
         } catch(err) {
+            this.logger.error(err);
             throw err;
         }
     }
@@ -128,7 +130,7 @@ export class WaiterService {
 
             return await this.waiterRepository.remove(waiter);
         } catch(err) {
-            Logger.error(`Error in remove(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
@@ -149,7 +151,7 @@ export class WaiterService {
             const ratsToBeDeleted = await this.ratRepository.findBy({id: In(ratIDs)});
 
             if (ratsToBeDeleted.length === 0) {
-                Logger.error(`Error in removeRatsFromWaiter(): rat with IDs ${ratIDs} weren't found`);
+                this.logger.error(`Rat with IDs ${ratIDs} weren't found`);
                 throw new EntityNotFoundError(Rat, { id: ratIDs });
             }
 
@@ -163,7 +165,7 @@ export class WaiterService {
 
             return ratsToBeDeleted;
         } catch(err) {
-            Logger.error(`Error in removeRatsFromWaiter(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }

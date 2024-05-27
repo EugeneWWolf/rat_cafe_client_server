@@ -2,10 +2,12 @@ import { Injectable, PipeTransform, BadRequestException, Logger, ArgumentMetadat
 
 @Injectable()
 export class ParseIntArrayPipe implements PipeTransform {
+  private readonly logger = new Logger(ParseIntArrayPipe.name);
+
   isOptional: boolean = false;
 
   constructor(isOptional?: boolean) {
-    if (isOptional) {
+    if (typeof isOptional !== 'undefined' && isOptional !== null) {
       this.isOptional = isOptional;
     }
   }
@@ -13,10 +15,11 @@ export class ParseIntArrayPipe implements PipeTransform {
   transform(value: string, metadata: ArgumentMetadata): number[] {
     if (!value) {
       if (this.isOptional) {
-        return undefined;
+        return null;
       }
 
-      Logger.error(`Error in ParseIntArrayPipe`);
+      this.logger.error(`Validation failed in ${metadata.data} parameter: string with numbers divided by commas is expected`);
+      
       throw new BadRequestException(`Validation failed in ${metadata.data} parameter: string with numbers divided by commas is expected`);
     }
 
@@ -25,7 +28,8 @@ export class ParseIntArrayPipe implements PipeTransform {
     });
 
     if (isNaN(values[values.length - 1])) {
-      Logger.error(`Error in ParseIntArrayPipe`);
+      this.logger.error(`Validation failed in ${metadata.data} parameter: unable to get numeric array of indexes`);
+      
       throw new BadRequestException(`Validation failed in ${metadata.data} parameter: unable to get numeric array of indexes`);
     }
 

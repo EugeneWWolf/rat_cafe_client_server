@@ -7,6 +7,8 @@ import { UpdateRatDto } from "../../dto/update-rat.dto";
 
 @Injectable()
 export class RatService {
+    private readonly logger = new Logger(RatService.name);
+
     constructor(
         @InjectRepository(Rat)
         private readonly ratRepository: Repository<Rat>,
@@ -18,7 +20,7 @@ export class RatService {
 
             return await this.ratRepository.save(rat);
         } catch(err) {
-            Logger.error(`Error in create(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
@@ -27,7 +29,7 @@ export class RatService {
         try {
             return await this.ratRepository.find();
         } catch(err) {
-            Logger.error(`Error in findAll(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
@@ -36,41 +38,28 @@ export class RatService {
         try {
             return await this.ratRepository.findOneByOrFail({ id });
         } catch(err) {
-            Logger.error(`Error in findOne(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
 
     async update(id: number, updateRatDto: UpdateRatDto): Promise<void> {
         try {
-            await this.ratRepository.findOneByOrFail({ id })
-        } catch(err) {
-            Logger.error(`Error in update(): ${err.message}`);
-            throw err;
-        }
-
-        try {
+            await this.ratRepository.findOneByOrFail({ id });
+            
             await this.ratRepository.update(id, updateRatDto);
         } catch(err) {
-            Logger.error(`Error in update(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
 
     async remove(id: number): Promise<Rat> {
-        let rat: Rat;
-
         try {
-            rat = await this.ratRepository.findOneByOrFail({ id })
-        } catch(err) {
-            Logger.error(`Error in remove(): ${err.message}`);
-            throw err;
-        }
-
-        try {
+            const rat = await this.ratRepository.findOneByOrFail({ id });
             return await this.ratRepository.remove(rat);
         } catch(err) {
-            Logger.error(`Error in remove(): ${err.message}`);
+            this.logger.error(err.message);
             throw err;
         }
     }
